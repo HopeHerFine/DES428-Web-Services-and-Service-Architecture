@@ -52,7 +52,7 @@ test("remote inbox forwards only the user token; never falls back to a local tab
   await assert.rejects(remoteNotifications(null), /Sign in/);
   const original = globalThis.fetch;
   globalThis.fetch = async (url, options) => {
-    assert.equal(options.headers.Authorization, "Bearer user-token");
+    assert.equal(options.headers.get("authorization"), "Bearer user-token");
     assert.equal(options.cache, "no-store");
     return Response.json([{ id: 1, title: "Remote notification" }]);
   };

@@ -18,6 +18,14 @@ class ProcessedEvent(Base):
     processed_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
 
 
+class WriteReceipt(Base):
+    __tablename__ = "write_receipts"
+    key: Mapped[str] = mapped_column(String(300), primary_key=True)
+    notification_id: Mapped[int] = mapped_column(Integer)
+    response_json: Mapped[str] = mapped_column(Text)
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=utcnow)
+
+
 class Notification(Base):
     __tablename__ = "notifications"
     __table_args__ = (UniqueConstraint("event_id", "recipient_role", "recipient_id"),)

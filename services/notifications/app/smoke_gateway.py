@@ -6,6 +6,7 @@ the real public origin, just as a browser on the host would see them.
 import http.client
 import http.cookiejar
 import json
+import os
 import random
 import time
 from datetime import date, timedelta
@@ -37,7 +38,8 @@ class GatewayHTTPHandler(HTTPHandler):
         if urlparse(request.full_url).netloc != "localhost:8080":
             raise RuntimeError("Unexpected cross-origin redirect during login")
         return self.do_open(lambda host, timeout=30, **kwargs:
-                            http.client.HTTPConnection("gateway", 80, timeout=timeout), request)
+                            http.client.HTTPConnection(os.getenv("GATEWAY_CONNECT_HOST", "gateway"),
+                                                       int(os.getenv("GATEWAY_CONNECT_PORT", "80")), timeout=timeout), request)
 
 
 class LoginForm(HTMLParser):
@@ -97,7 +99,7 @@ def login_error(error, jar):
                                             "path": cookie.path} for cookie in jar]})
 
 
-def browser_login(email):
+def browser_login(email, password=PASSWORD):
     jar = http.cookiejar.CookieJar(policy=LocalhostBrowserCookiePolicy())
     client = build_opener(GatewayHTTPHandler(), HTTPCookieProcessor(jar))
     with client.open(ORIGIN + "/api/oidc/login?returnTo=/notifications", timeout=30) as response:
@@ -105,7 +107,7 @@ def browser_login(email):
         form.feed(response.read().decode())
     if not form.action:
         raise RuntimeError("Keycloak login form missing; inspect realm import and gateway logs")
-    form.fields.update(username=email, password=PASSWORD)
+    form.fields.update(username=email, password=password)
     request = Request(form.action, data=urlencode(form.fields).encode(), headers={
         "Content-Type": "application/x-www-form-urlencoded", "Origin": ORIGIN,
     })

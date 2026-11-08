@@ -12,9 +12,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-notifications.ps
 ```
 
 The script builds/starts nginx, Keycloak, the monolith, PostgreSQL, RabbitMQ, the API and
-worker, then runs three probes. Open http://localhost:8080 after all probes pass.
+worker, then verifies event delivery, history import, login, registration and observability. Open http://localhost:8080 after all probes pass.
 The previous direct API port 8001 is intentionally no longer published by Compose.
-The original root docker-compose.yml remains separate until final team integration.
+The root docker-compose.yml now starts the integrated Notifications stack. The inherited baseline is compose.legacy.yml.
 
 ## API and ownership
 

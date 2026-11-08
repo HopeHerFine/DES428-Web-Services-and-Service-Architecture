@@ -6,7 +6,7 @@ const nextConfig = {
     instrumentationHook: true,
     // Do NOT bundle the native better-sqlite3 addon into the server/RSC bundles — keep it
     // external so `output: "standalone"` traces the real .node binary instead.
-    serverComponentsExternalPackages: ["better-sqlite3"],
+    serverComponentsExternalPackages: ["better-sqlite3", "@opentelemetry/sdk-node", "@opentelemetry/exporter-trace-otlp-http", "prom-client"],
   },
 };
 

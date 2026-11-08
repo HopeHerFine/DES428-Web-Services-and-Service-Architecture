@@ -5,7 +5,7 @@ import { z } from "zod";
 import { handle } from "#lib/http/handle.js";
 import { json } from "#lib/http/respond.js";
 import { parse, readJson } from "#lib/http/validate.js";
-import * as identity from "#lib/modules/identity/service.js";
+import { registerLinkedAccount } from "#lib/http/provisioning.js";
 
 const schema = z.object({
   email: z.string().email(),
@@ -16,7 +16,7 @@ const schema = z.object({
 
 export const POST = handle(async (req) => {
   const input = parse(schema, await readJson(req));
-  const customer = identity.registerCustomer(input);
+  const customer = await registerLinkedAccount("customer", input);
   return json(
     { id: customer.id, email: customer.email, name: customer.name },
     { status: 201, headers: { Location: `/api/customers/${customer.id}` } }

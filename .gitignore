@@ -18,3 +18,5 @@ __pycache__/
 *.log
 venv/
 __MACOSX/
+docs/evidence/
+runtime/

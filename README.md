@@ -2,23 +2,33 @@
 
 ## Team migration: Notifications
 
-The Notifications migration adds FastAPI/PostgreSQL, RabbitMQ, Keycloak and nginx.
-With Docker Desktop running, start and verify the integrated development stack:
+Start the integrated stack with Docker Desktop running:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-notifications.ps1 -WithMonolith
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-notifications.ps1
 ```
 
-Open http://localhost:8080. The script generates local secrets in the ignored
-`.env.notifications`; never commit that file or database files. It preserves existing
-Docker data and runs event-delivery and authenticated inbox integration probes.
-The seven seeded demo accounts use `eDemand-2026!`; new registrations are not yet
-provisioned into Keycloak. See [migration status](docs/notifications-migration.md) and
-[service documentation](services/notifications/README.md) for limits and remaining work.
+The command generates ignored local secrets, starts the canonical root Compose,
+configures Keycloak, imports historical SQLite notifications without duplicates,
+and checks real message delivery, browser login, registration and observability.
+Existing application volumes are preserved. Repeating the command does not reset data.
 
-The original monolith instructions below describe the inherited system. The team's
-second service, observability, resilience demonstrations, contracts and final submission
-artifacts still need integration. Keep the team repository private.
+- Application: http://localhost:8080
+- Dashboard: http://localhost:3000/d/notifications
+- Trace search: http://localhost:16686
+- API docs: http://localhost:8080/notification-docs
+
+Demo accounts use `eDemand-2026!`: `nong@example.com`, `sparkle@example.com`,
+and `admin@edemand.test`. New registrations are linked to Keycloak.
+
+See [Notifications handoff](docs/notifications-handoff.md),
+[migration details](docs/notifications-migration.md), and
+[contract tests and CI](docs/contracts-and-ci.md).
+The second service and Saga are outside this Notifications increment.
+
+The instructions below describe the inherited monolith. Use `compose.legacy.yml`
+explicitly when running that separate baseline; its port 3000 conflicts with Grafana.
+Keep the team repository private and never commit local secrets or database files.
 
 > Formerly **eDemand**. Only the course-facing name changed: inside the code the service, the
 > database file, the seed logins and the password below still say `edemand` / `eDemand`.
@@ -58,9 +68,9 @@ npm run build && npm start
 npm test               # node --test, in-memory DB, no server needed
 
 # Docker
-docker compose up -d --wait edemand      # boots healthy on :3000 (fresh DB, first booking 8001)
-docker compose run --rm test             # runs the suite in-memory
-docker compose down -v
+docker compose -f compose.legacy.yml up -d --wait edemand      # boots healthy on :3000 (fresh DB, first booking 8001)
+docker compose -f compose.legacy.yml run --rm test             # runs the suite in-memory
+docker compose -f compose.legacy.yml down -v
 ```
 
 **Seed logins** (password for all: `eDemand-2026!`):

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { getSession } from "#lib/http/session.js";
 import * as notifications from "#lib/modules/notifications/service.js";
 import { ActionButton } from "../_ui/client.js";
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { config } from "#lib/config.js";
 import { remoteNotifications } from "#lib/modules/notifications/client.js";
 import { ACCESS_COOKIE, verifyKeycloakToken } from "#lib/http/oidc.js";
@@ -20,7 +20,9 @@ export default async function NotificationsPage() {
     try { identity = await verifyKeycloakToken(token, "notifications"); } catch { /* redirect below */ }
     if (!identity || identity.role !== session.role || String(identity.legacy_user_id) !== String(session.sub)) redirect("/api/oidc/login");
     let error;
-    try { list = await remoteNotifications(token); } catch (err) { error = err; }
+    const incoming = headers();
+    const traceHeaders = Object.fromEntries(["traceparent", "tracestate"].map(key => [key, incoming.get(key)]).filter(([,value]) => value));
+    try { list = await remoteNotifications(token, "", "GET", incoming.get("x-request-id"), traceHeaders); } catch (err) { error = err; }
     if (error?.statusCode === 401) redirect("/api/oidc/login");
     if (error) return <div><h1>Notifications</h1><p role="alert">Notifications are temporarily unavailable. Please try again.</p></div>;
   } else list = notifications.listForUser({ sub: session.sub, role: session.role });

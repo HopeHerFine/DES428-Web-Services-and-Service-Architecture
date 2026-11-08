@@ -1,0 +1,11 @@
+{
+  "name": "homeservice-contract-checks",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node consumer.mjs && node provider.mjs"
+  },
+  "devDependencies": {
+    "@pact-foundation/pact": "17.1.4"
+  }
+}

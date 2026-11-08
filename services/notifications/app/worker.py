@@ -1,5 +1,10 @@
 import logging
 import time
+import json
+from prometheus_client import start_http_server
+from opentelemetry import trace, propagate
+from .telemetry import setup
+from .metrics import EVENTS
 
 import pika
 from pydantic import ValidationError
@@ -16,6 +21,9 @@ QUEUE = "notifications.events"
 
 
 def main():
+    setup("notifications-worker")
+    start_http_server(9101)
+    logging.getLogger("pika").setLevel(logging.WARNING)
     settings = Settings.from_env()
     engine, sessions = database(settings.database_url)
     Base.metadata.create_all(engine)
@@ -38,7 +46,16 @@ def main():
             def receive(ch, method, properties, body):
                 try:
                     event = DomainEvent.model_validate_json(body)
-                    consume_event(sessions, event)
+                    with trace.get_tracer(__name__).start_as_current_span(
+                        "consume " + event.type, kind=trace.SpanKind.CONSUMER,
+                        context=propagate.extract(properties.headers or {}),
+                    ) as span:
+                        applied = consume_event(sessions, event)
+                        result = "applied" if applied else "duplicate"
+                        EVENTS.labels(event.type, result).inc()
+                        span.set_attribute("messaging.message.id", event.id)
+                        logger.info(json.dumps({"service": "notifications-worker", "event_id": event.id,
+                            "trace_id": format(span.get_span_context().trace_id, "032x"), "result": result}))
                 except (ValidationError, ValueError, KeyError, TypeError):
                     logger.exception("invalid event; dead-lettering")
                     ch.basic_nack(method.delivery_tag, requeue=False)
