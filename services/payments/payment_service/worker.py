@@ -25,6 +25,10 @@ def topology(channel):
         "x-dead-letter-exchange": "", "x-dead-letter-routing-key": "payments.dead"})
     for kind in KINDS:
         channel.queue_bind(queue=QUEUE, exchange=EXCHANGE, routing_key=kind)
+    channel.queue_declare(queue="notifications.dead", durable=True)
+    channel.queue_declare(queue="notifications.events", durable=True, arguments={
+        "x-dead-letter-exchange": "", "x-dead-letter-routing-key": "notifications.dead"})
+    channel.queue_bind(queue="notifications.events", exchange=EXCHANGE, routing_key="payment.succeeded")
     # Declare downstream queue before publishing, so a slow Booking subscriber
     # cannot cause the first settlement/refund to disappear on a new stack.
     channel.queue_declare(queue="booking.payments.dead", durable=True)
@@ -87,3 +91,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
