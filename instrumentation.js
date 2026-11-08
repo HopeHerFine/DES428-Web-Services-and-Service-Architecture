@@ -14,5 +14,9 @@ export async function register() {
       const { startPublisher } = await import("./lib/messaging/publisher.js");
       startPublisher();
     }
+    if (config.externalPayments) {
+      const { startPaymentConsumer } = await import("./lib/messaging/payment-consumer.js");
+      startPaymentConsumer();
+    }
   }
 }

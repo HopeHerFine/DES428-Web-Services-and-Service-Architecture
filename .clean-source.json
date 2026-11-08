@@ -39,7 +39,8 @@
     "check-security.ps1",
     "compose.contracts.yml",
     "check-offline-memory.ps1",
-    ".env.example"
+    ".env.example",
+    "compose.payments.yml"
   ],
   "required": [
     "Dockerfile",

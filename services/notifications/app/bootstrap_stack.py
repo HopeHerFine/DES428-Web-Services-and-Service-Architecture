@@ -12,7 +12,7 @@ import shlex
 from urllib.parse import quote
 
 SECRET_KEYS=('NOTIFICATIONS_DB_PASSWORD','RABBITMQ_PASSWORD','JWT_SECRET',
-             'KEYCLOAK_ADMIN_PASSWORD','PROVISIONER_CLIENT_SECRET','LEGACY_SOURCE_ID')
+             'KEYCLOAK_ADMIN_PASSWORD','PROVISIONER_CLIENT_SECRET','LEGACY_SOURCE_ID','PAYMENTS_DB_PASSWORD')
 PUBLIC_DEFAULTS={
     'JWT_ISSUER':'http://localhost:8080/auth/realms/homeservice',
     'JWT_JWKS_URL':'http://keycloak:8080/auth/realms/homeservice/protocol/openid-connect/certs',
@@ -24,6 +24,7 @@ def service_environments(settings):
     db='postgresql+psycopg://notifications:'+quote(settings['NOTIFICATIONS_DB_PASSWORD'],safe='')+'@notifications-db:5432/notifications'
     broker='amqp://notifications:'+quote(settings['RABBITMQ_PASSWORD'],safe='')+'@rabbitmq:5672/%2F'
     delivery={'DATABASE_URL':db,'RABBITMQ_URL':broker}
+    payments_db='postgresql+psycopg://payments:'+quote(settings['PAYMENTS_DB_PASSWORD'],safe='')+'@payments-db:5432/payments'
     return {
         'notifications-db':{'POSTGRES_PASSWORD':settings['NOTIFICATIONS_DB_PASSWORD']},
         'rabbitmq':{'RABBITMQ_DEFAULT_PASS':settings['RABBITMQ_PASSWORD']},
@@ -36,6 +37,9 @@ def service_environments(settings):
         'resilience-fixture':delivery,
         'broker-recovery':delivery,
         'legacy-export':{'LEGACY_SOURCE_ID':settings['LEGACY_SOURCE_ID']},
+        'payments-db':{'POSTGRES_PASSWORD':settings['PAYMENTS_DB_PASSWORD']},
+        'payments':{'DATABASE_URL':payments_db},
+        'payments-worker':{'DATABASE_URL':payments_db,'RABBITMQ_URL':broker},
     }
 
 
@@ -74,7 +78,7 @@ def prepare(directory,environment):
         settings.setdefault(name,environment.get(name) or value)
     if any('\n' in value or '\r' in value for value in settings.values()):
         raise ValueError('Local setting values cannot contain line breaks')
-    if not previous:
+    if settings != previous:
         atomic_write(state_path,json.dumps(settings),0o600)
     for name,values in service_environments(settings).items():
         target=directory/name

@@ -5,16 +5,16 @@ import { getSession } from "#lib/http/session.js";
 import * as providers from "#lib/modules/providers/service.js";
 import * as catalog from "#lib/modules/catalog/service.js";
 import * as booking from "#lib/modules/booking/service.js";
-import * as payments from "#lib/modules/payments/service.js";
+import { ownWallet } from "#lib/modules/payments/server-wallet.js";
 import { money, Badge } from "../../../_ui/format.js";
 
-export default function ProviderDashboard() {
+export default async function ProviderDashboard() {
   const session = getSession();
   if (!session || session.role !== "provider") redirect("/provider/login");
 
   const profile = providers.getOwnProfile(session.sub);
   const services = catalog.listOwnServices(session.sub);
-  const wallet = payments.getWallet(session.sub);
+  const wallet = await ownWallet(session.sub, "/provider/dashboard");
   const { items } = booking.listBookings({ sub: session.sub, role: "provider" }, { page: 1, size: 100 });
 
   const byStatus = {};

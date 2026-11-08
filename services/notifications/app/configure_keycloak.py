@@ -63,6 +63,13 @@ def main():
     clients = admin("/clients?clientId=homeservice-web")
     if len(clients) != 1:
         raise RuntimeError("Expected exactly one homeservice-web client")
+    # Existing realms are preserved: add only the new Payments audience mapper.
+    mapper_path = "/clients/" + clients[0]["id"] + "/protocol-mappers/models"
+    mappers = admin(mapper_path)
+    if not any(mapper.get("config", {}).get("included.custom.audience") == "payments" for mapper in mappers):
+        admin(mapper_path, "POST", {"name": "payments audience", "protocol": "openid-connect",
+            "protocolMapper": "oidc-audience-mapper", "config": {
+                "included.custom.audience": "payments", "access.token.claim": "true", "id.token.claim": "false"}})
     basic = next((scope for scope in admin("/client-scopes") if scope["name"] == "basic"), None)
     if basic is None:
         raise RuntimeError("Keycloak basic scope is missing; inspect realm configuration")
