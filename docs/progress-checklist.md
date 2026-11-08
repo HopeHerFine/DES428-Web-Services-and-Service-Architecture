@@ -31,8 +31,9 @@
 - [ ] หาและแก้ BOLA ใน inherited code พร้อมสาธิตการโจมตีก่อน/หลัง
 - [ ] หาและแก้ unsafe race ที่ README ระบุ พร้อมทดสอบคำขอพร้อมกัน
 - [ ] Dashboard rate/error/response time และ Pact ครบทั้งสอง boundaries
-- [ ] Root canonical clone เปิดด้วย docker compose up ตาม brief; ตอนนี้ root ใช้
-  start-notifications.ps1 เตรียม secrets ส่วน docker compose up offline ผ่านใน prepared directory
+- [ ] ยืนยัน root canonical clone ที่เปิดด้วย docker compose up โดยไม่ใช้ host settings
+  จาก CI ของ commit ส่งจริงและซ้อมบนเครื่องเจ้าของงาน (โค้ด initialization เตรียมแล้ว)
+  ดู [วิธีเปิดและขอบเขตการทดสอบ](canonical-boot.md)
 - [ ] วัด RAM และตรวจ offline ซ้ำเมื่อระบบรวมมี Service ที่ 2/Saga
 
 ## สิ่งส่งงาน

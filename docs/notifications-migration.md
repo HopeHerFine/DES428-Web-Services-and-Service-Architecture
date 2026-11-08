@@ -3,19 +3,18 @@
 ## Start and verify
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-notifications.ps1
+docker compose up
 ```
 
-Docker Desktop with Linux containers is required. No host Node/Python installation
-is needed for startup. The `-WithMonolith` option remains accepted for compatibility;
-the full stack is now the default. The root `docker-compose.yml` includes the shared
-Notifications Compose definition, so there is one service configuration to maintain.
-The first start requires internet for images and packages; offline first boot is not supported.
+Docker Desktop with Linux containers is required. A non-root bootstrap generates
+persistent settings in a scoped Docker volume; Keycloak configuration is automatic.
+No host Node/Python or prior env-file generation is required. Existing optional
+`.env.notifications` settings are adopted without rotating their values.
+The first build needs internet/cached dependencies. See [canonical startup](canonical-boot.md).
 
-Startup preserves volumes/passwords, configures Keycloak without deleting its realm,
-imports old notifications, then checks RabbitMQ/PostgreSQL delivery, monolith outbox,
-real browser PKCE login and ownership, new registrations, dashboard targets and trace links.
-Smoke checks create inspectable demo bookings/providers; do not run them against production.
+The PowerShell startup wrapper remains optional for builds plus full integration
+probes. Smoke checks create inspectable demo bookings/providers; these are local
+demonstration tools, not production operations.
 
 ## Ownership and authentication
 
@@ -70,8 +69,9 @@ backoff and jitter. Resilience and broker restart probes have passed on the Dock
 - Prepared offline/fresh-volume boot passed on the owner's host: maximum sampled
   containers 1.13 GiB under a 7.76 GiB Engine budget, during a 60-second workload.
   See [measured result and limitations](offline-memory.md). Rehearse again after Service 2/Saga.
-- Literal docker compose up from the unprepared canonical clone remains a delivery
-  gap: current normal startup creates settings through the PowerShell script.
+- Canonical startup now supports docker compose up without a host env file. The
+  canonical-boot job tests fresh/restart/legacy-adoption cases; use its exact commit
+  result and the Windows rehearsal as evidence. See canonical-boot.md.
 - An inherited race repair, Service 2, Saga and the final team report/video are not
   established by these Notifications checks.
 

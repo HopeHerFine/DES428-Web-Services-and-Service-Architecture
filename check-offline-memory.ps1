@@ -26,8 +26,7 @@ try {
     if ($engineBytes -le 0 -or $engineBytes -gt 8589934592) {
         throw 'This rehearsal requires Docker Engine memory at or below 8 GiB. Set the Docker/WSL memory limit first, then retry.'
     }
-    if (-not (Test-Path '.env.notifications')) { & .\start-notifications.ps1 -PrepareOnly }
-    $original = @('compose','--env-file','.env.notifications','-f','docker-compose.yml')
+    $original = @('compose','-f','docker-compose.yml')
     $raw = & $docker @original config --format json
     if ($LASTEXITCODE -ne 0) { throw 'Original stack configuration is invalid.' }
     $originalProject = (($raw -join "`n") | ConvertFrom-Json).name
@@ -45,7 +44,7 @@ try {
     & (Join-Path $scratch 'start-notifications.ps1') -PrepareOnly
     Push-Location $scratch
     try {
-        $prepare = @('compose','--env-file','.env.notifications','-f','compose.notifications.yml','--profile','identity-config')
+        $prepare = @('compose','-f','docker-compose.yml','--profile','identity-config')
         Write-Host 'ONLINE PREPARATION: pulling tools and building two local application images.'
         & $docker @prepare pull keycloak gateway notifications-db rabbitmq jaeger prometheus grafana
         if ($LASTEXITCODE -ne 0) { throw 'Unable to cache tool images.' }
@@ -66,7 +65,7 @@ try {
             if ($LASTEXITCODE -ne 0) { throw "Prepared image is missing: $image" }
         }
         if ($running.Count -gt 0) {
-            & $docker compose --project-name $originalProject --env-file (Join-Path $PSScriptRoot '.env.notifications') -f (Join-Path $PSScriptRoot 'docker-compose.yml') down
+            & $docker compose --project-name $originalProject -f (Join-Path $PSScriptRoot 'docker-compose.yml') down
             if ($LASTEXITCODE -ne 0) { throw 'Unable to release original stack ports.' }
             $originalStopped = $true
         }
@@ -123,7 +122,7 @@ try {
     }
     $env:COMPOSE_PROJECT_NAME = $previousProject
     if ($originalStopped) {
-        & $docker compose --project-name $originalProject --env-file .env.notifications -f docker-compose.yml up -d --wait --wait-timeout 360
+        & $docker compose --project-name $originalProject -f docker-compose.yml up -d --wait --wait-timeout 360
         $restoreExit = $LASTEXITCODE
     }
     Pop-Location
