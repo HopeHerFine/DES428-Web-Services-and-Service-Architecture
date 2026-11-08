@@ -67,7 +67,11 @@ backoff and jitter. Resilience and broker restart probes have passed on the Dock
 - The previous migration commit passed all GitHub jobs. Pact now has an isolated
   Docker Compose command shared with CI; use the new commit run to verify this increment.
 - Jaeger is memory-backed and loses traces on restart. Logs stay on Docker stdout.
-- Peak memory under the team's 8 GB limit has not been measured.
+- Prepared offline/fresh-volume boot passed on the owner's host: maximum sampled
+  containers 1.13 GiB under a 7.76 GiB Engine budget, during a 60-second workload.
+  See [measured result and limitations](offline-memory.md). Rehearse again after Service 2/Saga.
+- Literal docker compose up from the unprepared canonical clone remains a delivery
+  gap: current normal startup creates settings through the PowerShell script.
 - An inherited race repair, Service 2, Saga and the final team report/video are not
   established by these Notifications checks.
 

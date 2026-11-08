@@ -1,0 +1,35 @@
+{
+  "result": "PASS",
+  "probe": "offline-memory",
+  "recorded_at": "2026-11-08T20:45:34.2264686Z",
+  "engine_memory_bytes": 8328609792,
+  "peak_sampled_container_bytes": 1211957772,
+  "samples": 45,
+  "workload_samples": 19,
+  "discarded_sampling_polls": 3,
+  "cached_images": 9,
+  "fresh_volumes": true,
+  "internal_network": true,
+  "pulls_and_builds_during_boot": false,
+  "original_stack_restored": true,
+  "memory_method": "Docker CLI usage excluding cache; sampled maximum, not continuous peak",
+  "workload": {
+    "result": "PASS",
+    "probe": "offline-workload",
+    "clients": 2,
+    "duration_seconds": 60,
+    "successful_requests": 1050,
+    "successful_read_updates": 524,
+    "outbound_connections_blocked": true
+  },
+  "origin": "Owner Docker Desktop / WSL 2 run; exported from ignored docs/evidence/offline-memory-latest.json",
+  "scope": "Prepared cached-image Notifications stack, not the future second service/Saga or a raw clone without settings/images",
+  "script_sha256": {
+    "check-offline-memory.ps1": "49ec3b48cbd70a3f10ca878dc3d75d529cde21edefc7d2b8587571fc9973e215",
+    "scripts/offline_compose.py": "5ad283f61b452866547e99a50842d6f0cc28d74a4ab964731af03dc223910782",
+    "scripts/memory-sample.ps1": "548ac83428c75b7e719cf8521c542a2ae37dde28898932accf470e6ed08487a0",
+    "scripts/memory-sampler.ps1": "374c9ddd2b3aab36cf74d03e435e8f406c7089b022435b7aefe4ebdc0ba20a67",
+    "services/notifications/app/offline_workload.py": "0188059d9c9dd22e10fd436956bb164d49cfb6814fa0492ba8d6feeebaf6229a"
+  },
+  "script_hash_format": "SHA-256 of UTF-8 source with LF line endings"
+}
