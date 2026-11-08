@@ -6,12 +6,13 @@
 เปิด PowerShell ในโฟลเดอร์โปรเจกต์แล้วรัน:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-notifications.ps1
+docker compose up
 ```
 
-คำสั่งสร้างการตั้งค่าเฉพาะเครื่อง เปิดระบบ เชื่อม Keycloak นำเข้าแจ้งเตือนเก่า
-และทดสอบการทำงานจริง ไม่ต้องติดตั้ง Node หรือ Python บนเครื่องเพื่อเปิดระบบ
-ไฟล์ `.env.notifications` เป็นความลับเฉพาะเครื่องและไม่ส่งขึ้น Git
+Compose เตรียมรหัสสุ่มใน Docker volume และตั้งค่า Keycloak อัตโนมัติก่อนเปิดเว็บ
+ไม่ต้องติดตั้ง Node/Python หรือสร้างไฟล์รหัสบนเครื่องก่อน ถ้ามี `.env.notifications`
+จากระบบเดิมจะอ่านค่าเดิมเพื่อรักษาการเข้าถึงข้อมูล หลังแก้ source ใช้ `docker compose up --build`
+ดู [ขั้นตอนเปิดจาก clone และการ reset](canonical-boot.md) และผล CI ของ commit ล่าสุด
 
 | หน้าจอ | URL |
 |---|---|
@@ -108,7 +109,8 @@ Keycloak ใช้โหมดพัฒนาและ H2 ส่วน Jaeger �
 Logs อยู่ใน Docker stdout ยังไม่มีระบบรวม logs แยกต่างหาก
 Access token มีอายุ 5 นาทีแล้วต้องเข้าสู่ระบบใหม่
 ชุด Notifications ทดสอบภายใต้งบ 8 GiB แล้ว แต่ต้องวัดซ้ำเมื่อเพิ่ม Service ที่ 2/Saga
-ยังต้องปิดข้อกำหนดเปิด raw clone ตาม brief และเตรียมคลิป/รายงานรวมของทีม
+เพิ่มการเปิด raw clone ด้วย Compose โดยตรงแล้ว ต้องตรวจ CI และซ้อมบนเครื่องเจ้าของงาน
+ตาม [canonical boot](canonical-boot.md); คลิป/รายงานรวมของทีมยังเหลือ
 การทดสอบข้อความซ้ำไม่ใช่หลักฐานว่าแก้ race condition เดิมของโจทย์แล้ว
 
 เอกสารแยก: [migration](notifications-migration.md), [contracts/CI](contracts-and-ci.md),

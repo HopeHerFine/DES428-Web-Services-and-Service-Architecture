@@ -38,7 +38,8 @@
     "check-resilience.ps1",
     "check-security.ps1",
     "compose.contracts.yml",
-    "check-offline-memory.ps1"
+    "check-offline-memory.ps1",
+    ".env.example"
   ],
   "required": [
     "Dockerfile",

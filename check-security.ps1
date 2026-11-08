@@ -3,7 +3,7 @@ Push-Location $PSScriptRoot
 . (Join-Path $PSScriptRoot 'scripts/probe-result.ps1')
 try {
     $docker = Get-Command docker -ErrorAction Stop
-    $compose = @('compose', '--env-file', '.env.notifications', '-f', 'compose.notifications.yml', '--profile', 'migration')
+    $compose = @('compose', '-f', 'docker-compose.yml')
     & $docker.Source @compose ps
     & $docker.Source @compose build security-probe
     if ($LASTEXITCODE -ne 0) { throw 'Security probe image build failed.' }

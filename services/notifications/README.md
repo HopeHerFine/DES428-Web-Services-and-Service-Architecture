@@ -8,11 +8,12 @@ See ../../docs/notifications-migration.md for current integration status and lim
 From the repository root:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-notifications.ps1 -WithMonolith
+docker compose up
 ```
 
-The script builds/starts nginx, Keycloak, the monolith, PostgreSQL, RabbitMQ, the API and
-worker, then verifies event delivery, history import, login, registration and observability. Open http://localhost:8080 after all probes pass.
+Compose starts the stack and prepares scoped local settings and Keycloak automatically.
+Open http://localhost:8080 after readiness. The optional start-notifications.ps1 wrapper
+also runs the integration probes. See ../../docs/canonical-boot.md.
 The previous direct API port 8001 is intentionally no longer published by Compose.
 The root docker-compose.yml now starts the integrated Notifications stack. The inherited baseline is compose.legacy.yml.
 

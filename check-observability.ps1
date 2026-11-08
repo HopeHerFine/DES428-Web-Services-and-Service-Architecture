@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 Set-Location -LiteralPath $PSScriptRoot
 . (Join-Path $PSScriptRoot 'scripts/probe-result.ps1')
-$composeArgs = @('compose', '--env-file', '.env.notifications', '-f', 'compose.notifications.yml', '--profile', 'migration')
+$composeArgs = @('compose', '-f', 'docker-compose.yml')
 & docker @composeArgs up --build -d --wait --wait-timeout 360
 if ($LASTEXITCODE -ne 0) { throw 'Observability stack did not start; inspect Compose logs.' }
 # Mounted nginx configuration needs an explicit reload for an existing container.

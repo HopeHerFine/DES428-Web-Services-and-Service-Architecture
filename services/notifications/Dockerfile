@@ -3,7 +3,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /service
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-RUN useradd --create-home service
+RUN useradd --create-home service && mkdir /bootstrap && chown service:service /bootstrap
 COPY --chown=service:service app ./app
 USER service
 EXPOSE 8000

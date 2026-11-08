@@ -7,14 +7,15 @@ from pathlib import Path
 LIMITS = {'keycloak':'896m','gateway':'128m','edemand':'1024m','notifications-db':'512m',
           'rabbitmq':'768m','notifications':'512m','notifications-worker':'384m',
           'jaeger':'512m','prometheus':'384m','grafana':'384m','keycloak-config':'384m'}
-PYTHON_SERVICES = {'notifications','notifications-worker','keycloak-config'}
+PYTHON_SERVICES = {'notifications','notifications-worker','keycloak-config','bootstrap'}
 
 
 def freeze(model, project, source_root, app_image, api_image):
     model = deepcopy(model)
     prefix = source_root.replace('\\','/').rstrip('/') + '/'
     services = {}
-    for name in LIMITS:
+    limits={**LIMITS,**({'bootstrap':'256m'} if 'bootstrap' in model['services'] else {})}
+    for name in limits:
         service = model['services'][name]
         service.pop('build',None)
         service.pop('profiles',None)
@@ -25,8 +26,8 @@ def freeze(model, project, source_root, app_image, api_image):
         if not service.get('image'):
             raise ValueError('Missing prepared image: ' + name)
         service['pull_policy'] = 'never'
-        service['mem_limit'] = LIMITS[name]
-        service['memswap_limit'] = LIMITS[name]
+        service['mem_limit'] = limits[name]
+        service['memswap_limit'] = limits[name]
         for mount in service.get('volumes',[]):
             if mount['type'] == 'bind':
                 source = mount['source'].replace('\\','/')
@@ -34,7 +35,7 @@ def freeze(model, project, source_root, app_image, api_image):
                     raise ValueError('Bind mount escaped clean source: ' + name)
                 mount['source'] = './' + source[len(prefix):]
         services[name] = service
-    services['keycloak-config']['depends_on'] = {'keycloak':{'condition':'service_healthy'}}
+    services['keycloak-config'].setdefault('depends_on',{})['keycloak'] = {'condition':'service_healthy'}
     services['edemand'].setdefault('depends_on',{})['keycloak-config'] = {'condition':'service_completed_successfully'}
     # Skip optional online update checks in the local offline demonstration.
     services['grafana'].setdefault('environment',{}).update({

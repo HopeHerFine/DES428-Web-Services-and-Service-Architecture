@@ -18,12 +18,13 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\check-offline-memory.p
 The rehearsal has two explicit phases:
 
 1. Online preparation: copy a clean set of source files into the ignored
-   `runtime/offline/` directory, generate new local settings, pull the tool images,
+   `runtime/offline/` directory, validate the source configuration, pull the tool images,
    and build two application images. Existing application credentials are not copied.
 2. Offline execution: temporarily stop the regular stack without deleting its data,
    then start the prepared stack with fresh volumes. Its generated Compose file has
    no build directives, all pull policies are `never`, and its only network is internal.
    Containers cannot access the internet. Keycloak configuration runs automatically.
+   The canonical bootstrap generates settings inside its own fresh test volume.
 
 Boot uses this single command inside the prepared directory (the script adds wait
 options so that it can assert readiness):
@@ -87,10 +88,10 @@ download images without internet. The generated demo directory contains resolved
 credentials, so do not commit or share that directory. Prepared images remain cached
 locally for reuse. No image registry account or cloud runtime is needed.
 
-The canonical source root still uses `start-notifications.ps1` to create settings and
-run initial configuration; this rehearsal does not claim that a raw clone with no
-settings/images can execute literal `docker compose up` offline. The final submission's
-packaging and cold-clone procedure must describe this distinction.
+The canonical root now also starts directly with docker compose up and scoped
+volume initialization; see [canonical boot](canonical-boot.md). The measurement above
+was recorded before that packaging change. Run this rehearsal again for the final
+submission's exact combined system rather than reusing it as a new measurement.
 
 The measured result above comes from the owner's Docker host. CI tests the source,
 sampler regression cases and image builds; it does not reproduce this laptop RAM run.

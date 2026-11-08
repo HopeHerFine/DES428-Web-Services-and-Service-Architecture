@@ -5,13 +5,17 @@
 Start the integrated stack with Docker Desktop running:
 
 ```powershell
-powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\start-notifications.ps1
+docker compose up
 ```
 
-The command generates ignored local secrets, starts the canonical root Compose,
-configures Keycloak, imports historical SQLite notifications without duplicates,
-and checks real message delivery, browser login, registration and observability.
-Existing application volumes are preserved. Repeating the command does not reset data.
+A non-root, network-free bootstrap creates random settings in a dedicated Docker
+volume. Each service sees only its own read-only subdirectory. Keycloak configuration
+runs automatically before the website starts. No host settings file or setup script
+is required. Existing optional `.env.notifications` values are adopted for upgrades.
+Use `docker compose up --build` after source changes. The first build needs internet.
+
+See [raw-clone startup, reset and upgrade details](docs/canonical-boot.md). The optional
+`start-notifications.ps1` builds the stack and runs the integration probes.
 
 - Application: http://localhost:8080
 - Dashboard: http://localhost:3000/d/notifications

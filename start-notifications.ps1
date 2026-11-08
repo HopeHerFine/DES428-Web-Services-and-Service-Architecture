@@ -17,43 +17,14 @@ try {
     & $dockerExe info --format '{{.OSType}}'
     if ($LASTEXITCODE -ne 0) { throw 'Open Docker Desktop and wait for Engine running, then retry.' }
 
-    function New-LocalPassword {
-            $bytes = New-Object byte[] 24
-            $generator = [Security.Cryptography.RandomNumberGenerator]::Create()
-            try { $generator.GetBytes($bytes) } finally { $generator.Dispose() }
-            return (($bytes | ForEach-Object { $_.ToString('x2') }) -join '')
-    }
-    if (-not (Test-Path -LiteralPath '.env.notifications')) {
-        $dbPassword = New-LocalPassword
-        $brokerPassword = New-LocalPassword
-        @(
-            "NOTIFICATIONS_DB_PASSWORD=$dbPassword"
-            "RABBITMQ_PASSWORD=$brokerPassword"
-            'JWT_ISSUER=http://localhost:8080/realms/homeservice'
-            'JWT_JWKS_URL=http://keycloak:8080/realms/homeservice/protocol/openid-connect/certs'
-        ) | Set-Content -LiteralPath '.env.notifications' -Encoding ascii
-        Write-Host 'Created local settings. Passwords are stored in the git-ignored .env.notifications.'
-    }
-    # Upgrade only managed identity settings; never replace database/broker passwords.
-    $settingsLines = @(Get-Content -LiteralPath '.env.notifications')
-    $settingsLines = @($settingsLines | Where-Object { $_ -notmatch '^JWT_(ISSUER|JWKS_URL)=' })
-    $settingsLines += 'JWT_ISSUER=http://localhost:8080/auth/realms/homeservice'
-    $settingsLines += 'JWT_JWKS_URL=http://keycloak:8080/auth/realms/homeservice/protocol/openid-connect/certs'
-    foreach ($settingName in @('JWT_SECRET', 'KEYCLOAK_ADMIN_PASSWORD', 'PROVISIONER_CLIENT_SECRET', 'LEGACY_SOURCE_ID')) {
-        if (-not ($settingsLines | Where-Object { $_ -match "^$settingName=.+" })) {
-            $settingsLines = @($settingsLines | Where-Object { $_ -notmatch "^$settingName=" })
-            $settingsLines += "$settingName=$(New-LocalPassword)"
-        }
-    }
-    $settingsLines | Set-Content -LiteralPath '.env.notifications' -Encoding ascii
     New-Item -ItemType Directory -Path 'runtime\faults', 'runtime\probes' -Force | Out-Null
     '{"mode":"none"}' | Set-Content -LiteralPath 'runtime\faults\notifications.json' -Encoding ascii
-    $composeArgs = @('compose', '--env-file', '.env.notifications', '-f', 'docker-compose.yml')
+    $composeArgs = @('compose', '-f', 'docker-compose.yml')
     if ($WithMonolith) { $composeArgs += @('--profile', 'migration') }
     & $dockerExe @composeArgs config --quiet
     if ($LASTEXITCODE -ne 0) { throw 'Compose settings validation failed.' }
     if ($PrepareOnly) {
-        Write-Host 'Prepared local settings only; no containers were changed.'
+        Write-Host 'Validated source configuration only; bootstrap creates settings on startup.'
         return
     }
     & $dockerExe @composeArgs up --build -d --wait --wait-timeout 360
