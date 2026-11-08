@@ -13,19 +13,30 @@ payment status after its own deduplicated transaction.
 ## Run the pilot
 
 The default `docker compose up` remains the verified Notifications increment.
-The Payments pilot is explicitly selected with both files:
+For a Windows rehearsal that preserves the original stack, run:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\check-payments.ps1
+```
+
+The helper briefly stops the original Notifications stack without removing its
+volumes, exports source without local credentials/databases, and builds/tests the
+Payments pilot in a fresh uniquely named project. Its finally block removes only
+that pilot's containers/volumes and restores the original Notifications stack.
+The final PASS means the real browser payment/refund probe passed. The pilot's
+synthetic bookings do not become records in your original application.
+Use `-PrepareOnly` to check the source export without changing Docker.
+
+For a persistent development pilot, use a clean clone with no host settings and a
+fresh project after stopping the original stack to release the same ports:
 
 ```powershell
 docker compose -p payments-pilot -f docker-compose.yml -f compose.payments.yml up --build -d --wait --wait-timeout 360
-docker compose -p payments-pilot -f docker-compose.yml -f compose.payments.yml run --rm --no-deps notifications-worker python -m app.smoke_payments
 ```
 
-Use a **fresh project**, with the existing stack stopped first to release the same
-localhost ports. Do not remove its volumes. Do not copy its host settings into the
-pilot. The pilot creates its own random settings volume and database. A project
-with existing legacy payment intents/transactions/nonzero wallet balances is
-rejected until a payment-history migration is implemented. A project that has
-enabled external Payments must continue to use both Compose files on restart.
+Do not enable the pilot against existing payment history: legacy intents,
+transactions or nonzero wallet balances are rejected until migration is implemented.
+A project that enabled external Payments must use both Compose files on restart.
 
 Application: http://localhost:8080. Payments docs: http://localhost:8080/payment-docs.
 Use the existing Keycloak demo logins and password documented in the root README.
@@ -86,3 +97,4 @@ measurement for the combined stack, and the team's explicit Saga workflow/recove
 evidence remain. The current asynchronous refund is a building block, not a claim
 that all Saga requirements are fulfilled. Do not replace the original project's
 payment history or mark the team checklist complete based only on this pilot.
+
