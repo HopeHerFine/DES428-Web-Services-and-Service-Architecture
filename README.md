@@ -30,6 +30,11 @@ Run Pact against an isolated PostgreSQL database with the same command as CI:
 docker compose -f compose.contracts.yml run --build --rm contract-tests
 ```
 
+The prepared offline Notifications rehearsal passed on the owner's Docker host:
+maximum sampled containers **1.13 GiB** under a **7.76 GiB** Engine budget.
+See [offline/RAM procedure and evidence](docs/offline-memory.md) and
+[the brief checklist](docs/progress-checklist.md) for exact scope and remaining work.
+
 The second service and Saga are outside this Notifications increment.
 
 The instructions below describe the inherited monolith. Use `compose.legacy.yml`

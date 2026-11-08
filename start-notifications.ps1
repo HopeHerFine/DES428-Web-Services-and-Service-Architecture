@@ -1,4 +1,4 @@
-param([switch]$WithMonolith = $true)
+param([switch]$WithMonolith = $true, [switch]$PrepareOnly)
 $ErrorActionPreference = 'Stop'
 Push-Location $PSScriptRoot
 try {
@@ -52,6 +52,10 @@ try {
     if ($WithMonolith) { $composeArgs += @('--profile', 'migration') }
     & $dockerExe @composeArgs config --quiet
     if ($LASTEXITCODE -ne 0) { throw 'Compose settings validation failed.' }
+    if ($PrepareOnly) {
+        Write-Host 'Prepared local settings only; no containers were changed.'
+        return
+    }
     & $dockerExe @composeArgs up --build -d --wait --wait-timeout 360
     if ($LASTEXITCODE -ne 0) {
         & $dockerExe @composeArgs logs --tail 60

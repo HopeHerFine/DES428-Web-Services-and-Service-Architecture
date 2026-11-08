@@ -21,6 +21,10 @@ jobs:
         run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File test-helpers/check-probe-transport.ps1
       - name: Verify clean source without Git
         run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File test-helpers/check-clean-source.ps1
+      - name: Verify Docker memory measurement units
+        run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File test-helpers/check-memory-parser.ps1
+      - name: Verify memory sampler survives transient container exits
+        run: powershell.exe -NoProfile -ExecutionPolicy Bypass -File test-helpers/check-memory-sampler.ps1
   unit:
     runs-on: ubuntu-24.04
     timeout-minutes: 15
@@ -80,4 +84,3 @@ jobs:
           push: false
           cache-from: type=gha,scope=notifications
           cache-to: type=gha,scope=notifications,mode=max
-

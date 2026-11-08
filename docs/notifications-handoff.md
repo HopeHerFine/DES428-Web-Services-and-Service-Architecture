@@ -67,15 +67,17 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\check-notifications-fi
 การตรวจ source ใหม่ไม่ต้องติดตั้ง Git และไม่ได้ส่งโค้ดออกไป
 รายการ source มาจาก `.clean-source.json` โดยตัดรหัสผ่าน ฐานข้อมูล และไฟล์ที่สร้างตอนรันออก
 
-## ผลที่ตรวจผ่านของชุด Notifications ก่อนปรับคำสั่ง Pact
+## ผลที่ตรวจผ่านของชุด Notifications
 
-- Node unit tests 72 รายการ และ Python tests 39 รายการผ่าน
+- ชุดเดิมผ่าน Node 72 รายการ และ Python 39 รายการ; รอบ offline เพิ่มอีก 5 กรณี โดยดูผล CI ของ commit ล่าสุดประกอบ
 - Pact ฝั่งเว็บและ FastAPI ผ่าน 5 กรณี และตรวจพบสัญญาตอบกลับที่ผิดโดยตั้งใจ
 - บน Docker ผ่านการสมัคร/เข้าสู่ระบบจริง ตรวจ token/สิทธิ์ ระบบช้า/ล่ม
   ข้อความซ้ำ การ restart broker/worker และ Dashboard/Trace
 - ชุดนำเข้าข้อมูลเก่าและการเปิดจาก source สะอาด/ฐานข้อมูลใหม่ผ่านบนเครื่องเจ้าของงานแล้ว
 - ชุดเดิมรวมเข้า main และ [CI ผ่านครบ](https://github.com/HopeHerFine/DES428-Web-Services-and-Service-Architecture/actions/runs/42493551442)
-  ที่ commit `3460a30`; การเปลี่ยนคำสั่ง Pact ในรอบนี้ต้องดูผล CI ของ commit ใหม่แยกต่างหาก
+  และ Pact แบบ Docker Compose รวมเข้า main ผ่าน [CI ของ PR #2](https://github.com/HopeHerFine/DES428-Web-Services-and-Service-Architecture/actions/runs/42512532452) แล้ว
+- เปิดชุด images ที่เตรียมไว้ด้วย volumes ใหม่แบบ offline ผ่าน; RAM รวมสูงสุดที่สุ่มวัดได้ 1.13 GiB
+  ภายใต้งบ Engine 7.76 GiB ดู [ผลและวิธีวัด](offline-memory.md)
 
 ## Contract Test ตาม brief
 
@@ -105,9 +107,12 @@ Notifications เป็น service ที่แยกแล้วหนึ่ง
 Keycloak ใช้โหมดพัฒนาและ H2 ส่วน Jaeger เก็บ trace ในหน่วยความจำและหายเมื่อ restart
 Logs อยู่ใน Docker stdout ยังไม่มีระบบรวม logs แยกต่างหาก
 Access token มีอายุ 5 นาทีแล้วต้องเข้าสู่ระบบใหม่
-ยังต้องวัดหน่วยความจำสูงสุดกับข้อกำหนด 8 GB และเตรียมคลิป/รายงานรวมของทีม
+ชุด Notifications ทดสอบภายใต้งบ 8 GiB แล้ว แต่ต้องวัดซ้ำเมื่อเพิ่ม Service ที่ 2/Saga
+ยังต้องปิดข้อกำหนดเปิด raw clone ตาม brief และเตรียมคลิป/รายงานรวมของทีม
 การทดสอบข้อความซ้ำไม่ใช่หลักฐานว่าแก้ race condition เดิมของโจทย์แล้ว
 
 เอกสารแยก: [migration](notifications-migration.md), [contracts/CI](contracts-and-ci.md),
 [resilience](notifications-resilience.md), [recovery](broker-worker-recovery.md),
 [observability](observability.md), [registration](registration-keycloak.md)
+
+ติดตามงานทั้งทีมใน [checklist ตาม brief](progress-checklist.md)
