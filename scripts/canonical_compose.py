@@ -36,6 +36,8 @@ def canonical(model,source_root):
         for mount in service.get('volumes',[]):
             if mount['type']=='bind':
                 mount['source']=relative(mount['source'])
+                if mount['source'] in ('./runtime/faults','./runtime/probes'):
+                    mount.setdefault('bind',{})['create_host_path']=True
         if name not in SCOPED:
             continue
         environment=service.get('environment',{})
@@ -78,3 +80,4 @@ if __name__=='__main__':
     source=json.loads(Path(args.input).read_text(encoding='utf-8-sig'))
     Path(args.output).write_text(json.dumps(canonical(source,args.source_root),indent=2)+'\n',encoding='utf-8')
     print('Generated canonical Compose without inline credentials or a required environment file.')
+

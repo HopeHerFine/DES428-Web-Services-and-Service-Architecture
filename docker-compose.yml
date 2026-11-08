@@ -34,7 +34,9 @@
           "type": "bind",
           "source": "./runtime/probes",
           "target": "/probe-data",
-          "bind": {}
+          "bind": {
+            "create_host_path": true
+          }
         },
         {
           "type": "volume",
@@ -379,7 +381,9 @@
           "type": "bind",
           "source": "./runtime/probes",
           "target": "/probe-data",
-          "bind": {}
+          "bind": {
+            "create_host_path": true
+          }
         },
         {
           "type": "volume",
@@ -435,7 +439,9 @@
           "source": "./runtime/faults",
           "target": "/faults",
           "read_only": true,
-          "bind": {}
+          "bind": {
+            "create_host_path": true
+          }
         },
         {
           "type": "volume",
@@ -696,7 +702,9 @@
           "type": "bind",
           "source": "./runtime/probes",
           "target": "/probe-data",
-          "bind": {}
+          "bind": {
+            "create_host_path": true
+          }
         },
         {
           "type": "volume",
@@ -751,13 +759,17 @@
           "type": "bind",
           "source": "./runtime/probes",
           "target": "/probe-data",
-          "bind": {}
+          "bind": {
+            "create_host_path": true
+          }
         },
         {
           "type": "bind",
           "source": "./runtime/faults",
           "target": "/faults",
-          "bind": {}
+          "bind": {
+            "create_host_path": true
+          }
         }
       ],
       "working_dir": "/probe"
@@ -842,3 +854,4 @@
     "stack-config": {}
   }
 }
+
