@@ -1,0 +1,247 @@
+{
+  "realm": "homeservice",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": false,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 1800,
+  "clients": [
+    {
+      "clientId": "homeservice-web",
+      "name": "Homeservice browser",
+      "enabled": true,
+      "protocol": "openid-connect",
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://localhost:8080/api/oidc/callback"
+      ],
+      "webOrigins": [
+        "http://localhost:8080"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "basic",
+        "profile",
+        "email"
+      ],
+      "protocolMappers": [
+        {
+          "name": "notification audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "notifications",
+            "access.token.claim": "true",
+            "id.token.claim": "false"
+          }
+        },
+        {
+          "name": "role",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "role",
+            "claim.name": "role",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "multivalued": "false"
+          }
+        },
+        {
+          "name": "legacy_user_id",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-usermodel-attribute-mapper",
+          "config": {
+            "user.attribute": "legacy_user_id",
+            "claim.name": "legacy_user_id",
+            "jsonType.label": "String",
+            "access.token.claim": "true",
+            "id.token.claim": "true",
+            "userinfo.token.claim": "true",
+            "multivalued": "false"
+          }
+        }
+      ]
+    }
+  ],
+  "users": [
+    {
+      "username": "nong@example.com",
+      "email": "nong@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "nong",
+      "lastName": "Demo",
+      "attributes": {
+        "role": [
+          "customer"
+        ],
+        "legacy_user_id": [
+          "1"
+        ]
+      },
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "eDemand-2026!",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "somchai@example.com",
+      "email": "somchai@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "somchai",
+      "lastName": "Demo",
+      "attributes": {
+        "role": [
+          "customer"
+        ],
+        "legacy_user_id": [
+          "2"
+        ]
+      },
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "eDemand-2026!",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "aom@example.com",
+      "email": "aom@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "aom",
+      "lastName": "Demo",
+      "attributes": {
+        "role": [
+          "customer"
+        ],
+        "legacy_user_id": [
+          "3"
+        ]
+      },
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "eDemand-2026!",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "sparkle@example.com",
+      "email": "sparkle@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "sparkle",
+      "lastName": "Demo",
+      "attributes": {
+        "role": [
+          "provider"
+        ],
+        "legacy_user_id": [
+          "1"
+        ]
+      },
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "eDemand-2026!",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "fixit@example.com",
+      "email": "fixit@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "fixit",
+      "lastName": "Demo",
+      "attributes": {
+        "role": [
+          "provider"
+        ],
+        "legacy_user_id": [
+          "2"
+        ]
+      },
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "eDemand-2026!",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "glow@example.com",
+      "email": "glow@example.com",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "glow",
+      "lastName": "Demo",
+      "attributes": {
+        "role": [
+          "provider"
+        ],
+        "legacy_user_id": [
+          "3"
+        ]
+      },
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "eDemand-2026!",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "username": "admin@edemand.test",
+      "email": "admin@edemand.test",
+      "emailVerified": true,
+      "enabled": true,
+      "firstName": "admin",
+      "lastName": "Demo",
+      "attributes": {
+        "role": [
+          "admin"
+        ],
+        "legacy_user_id": [
+          "1"
+        ]
+      },
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "eDemand-2026!",
+          "temporary": false
+        }
+      ]
+    }
+  ]
+}
