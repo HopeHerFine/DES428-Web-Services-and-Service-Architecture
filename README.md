@@ -24,6 +24,12 @@ and `admin@edemand.test`. New registrations are linked to Keycloak.
 See [Notifications handoff](docs/notifications-handoff.md),
 [migration details](docs/notifications-migration.md), and
 [contract tests and CI](docs/contracts-and-ci.md).
+Run Pact against an isolated PostgreSQL database with the same command as CI:
+
+```powershell
+docker compose -f compose.contracts.yml run --build --rm contract-tests
+```
+
 The second service and Saga are outside this Notifications increment.
 
 The instructions below describe the inherited monolith. Use `compose.legacy.yml`
