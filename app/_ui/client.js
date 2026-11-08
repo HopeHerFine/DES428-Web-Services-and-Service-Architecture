@@ -3,13 +3,18 @@
 // for a monolith. The httpOnly edemand_token cookie rides along automatically on same-origin
 // requests, so these components never handle the JWT themselves.
 import { useState } from "react";
+import { resilientFetch } from "#lib/http/retry.js";
 
 async function postJSON(url, body, method = "POST") {
-  const res = await fetch(url, {
+  const send = url.startsWith("/api/notifications/") ? resilientFetch : fetch;
+  let res;
+  try { res = await send(url, {
     method,
     headers: body !== undefined ? { "content-type": "application/json" } : {},
     body: body !== undefined ? JSON.stringify(body) : undefined,
-  });
+  }); } catch {
+    return { ok: false, status: 503, data: { error: "Connection interrupted. Please retry with the same details." } };
+  }
   let data = null;
   try {
     data = await res.json();

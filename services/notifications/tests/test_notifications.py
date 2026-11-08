@@ -47,6 +47,17 @@ def auth(token):
     return {"Authorization": f"Bearer {token}"}
 
 
+def test_metrics_use_route_templates_and_do_not_expose_tokens(system):
+    client, sessions, token = system
+    credential = token()
+    client.post("/api/notifications/987654/read", headers=auth(credential))
+    response = client.get("/metrics")
+    assert response.status_code == 200
+    assert 'route="/api/notifications/{notification_id}/read"' in response.text
+    assert credential not in response.text
+    assert "987654" not in response.text
+
+
 def test_inbox_ownership_and_mark_read(system):
     client, sessions, token = system
     consume_event(sessions, event())
@@ -140,3 +151,31 @@ def test_health_and_correlation(system):
     response = client.get("/ready", headers={"x-request-id": "demo-123"})
     assert response.status_code == 200
     assert response.headers["x-request-id"] == "demo-123"
+
+
+def test_write_key_replays_same_result_and_cannot_change_other_record(system):
+    client, sessions, token = system
+    consume_event(sessions, event("write-1"))
+    consume_event(sessions, event("write-2"))
+    headers = {**auth(token()), "Idempotency-Key": "stable-write-key"}
+    inbox = client.get("/api/notifications", headers=headers).json()
+    first_id, second_id = inbox[0]["id"], inbox[1]["id"]
+    first = client.post(f"/api/notifications/{first_id}/read", headers=headers)
+    assert first.status_code == 200
+    repeat = client.post(f"/api/notifications/{first_id}/read", headers=headers)
+    assert repeat.json() == first.json()
+    conflict = client.post(f"/api/notifications/{second_id}/read", headers=headers)
+    assert conflict.status_code == 409
+    fresh = client.get("/api/notifications", headers=headers).json()
+    assert next(row for row in fresh if row["id"] == second_id)["read_at"] is None
+    other = {**auth(token("2")), "Idempotency-Key": "stable-write-key"}
+    assert client.post(f"/api/notifications/{first_id}/read", headers=other).status_code == 403
+
+
+def test_invalid_write_key_is_rejected(system):
+    client, sessions, token = system
+    consume_event(sessions, event())
+    row = client.get("/api/notifications", headers=auth(token())).json()[0]
+    response = client.post(f"/api/notifications/{row['id']}/read",
+                           headers={**auth(token()), "Idempotency-Key": "x" * 129})
+    assert response.status_code == 400

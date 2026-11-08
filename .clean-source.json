@@ -1,0 +1,5 @@
+{
+  "directories": [".github", "app", "contracts", "docs", "gateway", "keycloak", "lib", "observability", "public", "scripts", "services", "test", "test-helpers"],
+  "files": [".clean-source.json", ".dockerignore", ".gitignore", "Dockerfile", "README.md", "package.json", "package-lock.json", "docker-compose.yml", "compose.notifications.yml", "compose.legacy.yml", "instrumentation.js", "jsconfig.json", "next.config.js", "openapi.yaml", "start-notifications.ps1", "migrate-notifications-history.ps1", "check-broker-recovery.ps1", "check-clean-start.ps1", "check-notifications-final.ps1", "check-observability.ps1", "check-resilience.ps1", "check-security.ps1"],
+  "required": ["Dockerfile", "package.json", "package-lock.json", "docker-compose.yml", "compose.notifications.yml", "start-notifications.ps1", "scripts/clean-source.ps1"]
+}

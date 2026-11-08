@@ -16,5 +16,8 @@ README.md
 .env
 .env.*
 services
+contracts
+.github
 work
+runtime
 __MACOSX
