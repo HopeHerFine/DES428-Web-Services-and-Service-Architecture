@@ -1,0 +1,271 @@
+{
+  "consumer": {
+    "name": "HomeserviceWeb"
+  },
+  "interactions": [
+    {
+      "description": "read own payment intent",
+      "providerStates": [
+        {
+          "name": "payable booking"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer pact-customer"
+        },
+        "method": "GET",
+        "path": "/api/payments/intents/8001"
+      },
+      "response": {
+        "body": {
+          "amount_cents": 107000,
+          "method": "gateway",
+          "order_id": 8001,
+          "status": "requires_payment"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "settle own payment using an idempotency key",
+      "providerStates": [
+        {
+          "name": "payable booking"
+        }
+      ],
+      "request": {
+        "body": {
+          "order_id": 8001
+        },
+        "headers": {
+          "Authorization": "Bearer pact-customer",
+          "Content-Type": "application/json",
+          "Idempotency-Key": "pact-payment-once"
+        },
+        "method": "POST",
+        "path": "/api/payments/simulate"
+      },
+      "response": {
+        "body": {
+          "ok": true,
+          "order_id": 8001,
+          "status": "succeeded"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "reject another customer reading payment",
+      "providerStates": [
+        {
+          "name": "payable booking"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer pact-other"
+        },
+        "method": "GET",
+        "path": "/api/payments/intents/8001"
+      },
+      "response": {
+        "body": {
+          "detail": "You do not own this payment"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 403
+      }
+    },
+    {
+      "description": "reject invalid payment credentials",
+      "providerStates": [
+        {
+          "name": "payable booking"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer invalid"
+        },
+        "method": "GET",
+        "path": "/api/payments/intents/8001"
+      },
+      "response": {
+        "body": {
+          "detail": "Invalid bearer token"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "status": 401
+      }
+    },
+    {
+      "description": "read provider wallet with remote ledger",
+      "providerStates": [
+        {
+          "name": "settled completed booking"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer pact-provider"
+        },
+        "method": "GET",
+        "path": "/api/payments/wallet"
+      },
+      "response": {
+        "body": {
+          "balance_cents": 96300,
+          "commission_owed_cents": 0,
+          "provider_id": 1,
+          "transactions": [
+            {
+              "amount_cents": 96300,
+              "created_at": "2026-01-01T00:00:00+00:00",
+              "id": 2,
+              "kind": "payout_credit",
+              "method": "gateway",
+              "order_id": 8001,
+              "status": "succeeded"
+            },
+            {
+              "amount_cents": 107000,
+              "created_at": "2026-01-01T00:00:00+00:00",
+              "id": 1,
+              "kind": "charge",
+              "method": "gateway",
+              "order_id": 8001,
+              "status": "succeeded"
+            }
+          ]
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$.transactions[0].created_at": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.transactions[0].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            },
+            "$.transactions[1].created_at": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$.transactions[1].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    },
+    {
+      "description": "read customer payment transactions",
+      "providerStates": [
+        {
+          "name": "settled booking"
+        }
+      ],
+      "request": {
+        "headers": {
+          "Authorization": "Bearer pact-customer"
+        },
+        "method": "GET",
+        "path": "/api/payments/transactions"
+      },
+      "response": {
+        "body": [
+          {
+            "amount_cents": 107000,
+            "created_at": "2026-01-01T00:00:00+00:00",
+            "id": 1,
+            "kind": "charge",
+            "method": "gateway",
+            "order_id": 8001,
+            "status": "succeeded"
+          }
+        ],
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "matchingRules": {
+          "body": {
+            "$": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type",
+                  "min": 1
+                }
+              ]
+            },
+            "$[*].created_at": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "type"
+                }
+              ]
+            },
+            "$[*].id": {
+              "combine": "AND",
+              "matchers": [
+                {
+                  "match": "integer"
+                }
+              ]
+            }
+          }
+        },
+        "status": 200
+      }
+    }
+  ],
+  "metadata": {
+    "pact-js": {
+      "version": "17.1.4"
+    },
+    "pactRust": {
+      "ffi": "0.5.8",
+      "models": "1.3.16"
+    },
+    "pactSpecification": {
+      "version": "3.0.0"
+    }
+  },
+  "provider": {
+    "name": "Payments"
+  }
+}

@@ -78,13 +78,17 @@ jobs:
       - uses: actions/checkout@v7.0.1
       - name: Run Pact with the documented Compose command
         run: docker compose -f compose.contracts.yml run --build --rm contract-tests
+      - name: Require generated contracts for both service boundaries
+        run: |
+          test -s runtime/contracts/pacts/HomeserviceWeb-Notifications.json
+          test -s runtime/contracts/pacts/HomeserviceWeb-Payments.json
       - name: Contract service logs
         if: failure()
         run: docker compose -f compose.contracts.yml logs --no-color --tail 100
       - uses: actions/upload-artifact@v7.0.2
         if: always()
         with:
-          name: notifications-pact
+          name: homeservice-pacts
           path: runtime/contracts/pacts/*.json
           if-no-files-found: error
       - name: Remove isolated contract containers

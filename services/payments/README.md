@@ -91,10 +91,15 @@ Local service tests: `python -m pytest tests -q` from this directory after insta
 requirements-dev.txt. SQLite-only runs skip PostgreSQL concurrency tests explicitly.
 Only a disposable database named `payments_test` is accepted for PostgreSQL tests.
 
+HTTP Pact now verifies six Payments interactions using the actual web client and
+real provider. Run it together with Notifications using the root command:
+`docker compose -f compose.contracts.yml run --build --rm contract-tests`.
+See ../../docs/contracts-and-ci.md for scope, identity-test doubles and CI details.
+The owner has also reported a passing Windows `check-payments.ps1` rehearsal.
+
 This increment is **not yet the finished second seam**: legacy payment-history
-import, Pact across this boundary, dedicated dashboard/fault rehearsal, offline/RAM
+import, dedicated dashboard/fault rehearsal, offline/RAM
 measurement for the combined stack, and the team's explicit Saga workflow/recovery
 evidence remain. The current asynchronous refund is a building block, not a claim
 that all Saga requirements are fulfilled. Do not replace the original project's
 payment history or mark the team checklist complete based only on this pilot.
-

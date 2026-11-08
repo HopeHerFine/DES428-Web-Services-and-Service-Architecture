@@ -14,6 +14,19 @@ services:
       interval: 2s
       timeout: 3s
       retries: 30
+  payment-contract-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: pact_payments
+      POSTGRES_USER: pact
+      POSTGRES_PASSWORD: pact-test-only
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U pact -d pact_payments']
+      interval: 2s
+      timeout: 3s
+      retries: 30
   contract-tests:
     build:
       context: .
@@ -21,10 +34,13 @@ services:
     init: true
     environment:
       PACT_DATABASE_URL: postgresql+psycopg://pact:pact-test-only@contract-db:5432/pact_notifications
+      PACT_PAYMENTS_DATABASE_URL: postgresql+psycopg://pact:pact-test-only@payment-contract-db:5432/pact_payments
       PACT_PYTHON: python
       PACT_DO_NOT_TRACK: 'true'
     depends_on:
       contract-db:
+        condition: service_healthy
+      payment-contract-db:
         condition: service_healthy
     volumes:
       - ./runtime/contracts/pacts:/workspace/contracts/pacts

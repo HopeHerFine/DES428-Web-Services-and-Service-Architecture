@@ -26,7 +26,8 @@
 
 - [ ] Service ที่ 2 ด้วย FastAPI และฐานข้อมูล PostgreSQL/MySQL ของตัวเอง
   เริ่ม Payments & Wallet แบบ opt-in pilot แล้ว ดู services/payments/README.md;
-  ยังต้องปิด migration/Pact/observability/faults/Saga ก่อนยืนยันทั้ง seam
+  Windows pilot ผ่านแล้ว; เพิ่ม HTTP Pact ของ Payments หกกรณีแล้ว
+  ยังต้องปิด migration/observability/faults/Saga ก่อนยืนยันทั้ง seam
 - [ ] JWT/ownership และ traces ครบทั้งสอง seams
 - [ ] ข้อกำหนดสอง events ของทีมและ Saga พร้อม compensating actions
 - [ ] เหตุผลเลือก orchestration/choreography จากหลักฐานของทีมเอง

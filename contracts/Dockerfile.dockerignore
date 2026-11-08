@@ -10,6 +10,10 @@
 !services/notifications/requirements.txt
 !services/notifications/app/
 !services/notifications/app/**
+!services/payments/
+!services/payments/requirements.txt
+!services/payments/payment_service/
+!services/payments/payment_service/**
 **/node_modules
 **/__pycache__
 **/.pytest_cache
