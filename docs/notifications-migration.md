@@ -27,7 +27,7 @@ without confusing overlapping customer/provider IDs.
 
 Authorization code + PKCE S256, signed state, nonce, issuer/audience/expiration/signature
 checks protect login. The API separately verifies RS256 access tokens and ownership.
-Direct browser password grants are disabled. Five-minute sessions require sign-in again;
+Direct browser password grants are disabled. Five-minute access tokens require sign-in again;
 no refresh token is stored. nginx blocks cross-origin application writes and serves
 the canonical origin http://localhost:8080. Keycloak uses development mode and H2
 for this local demonstration. This is not a production identity deployment.
@@ -58,14 +58,14 @@ backoff and jitter. Resilience and broker restart probes have passed on the Dock
 
 ## Verification and remaining limits
 
-- Local unit tests: 72 Node and 31 Python tests passed.
+- Local unit tests: 72 Node and 39 Python tests passed.
 - Pact: five consumer/provider HTTP interactions passed locally; a deliberately
   missing response field was correctly rejected. Local verification used SQLite.
 - Docker evidence: registration, token security, three HTTP faults/concurrency,
   broker/worker recovery, dashboard and cross-service trace checks passed.
-- Historical import and the updated root clean-source boot still require Docker validation.
-- GitHub CI is implemented, including a dedicated PostgreSQL contract job and image
-  builds; its first remote run is pending publication.
+- Historical import and fresh-source/fresh-volume boot passed on the Docker host.
+- The previous migration commit passed all GitHub jobs. Pact now has an isolated
+  Docker Compose command shared with CI; use the new commit run to verify this increment.
 - Jaeger is memory-backed and loses traces on restart. Logs stay on Docker stdout.
 - Peak memory under the team's 8 GB limit has not been measured.
 - An inherited race repair, Service 2, Saga and the final team report/video are not

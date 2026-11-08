@@ -9,21 +9,48 @@ cross-account denial, an empty inbox, and invalid credentials.
 Response bodies check the notification fields used by the UI, including nullable
 read status and a string timestamp after marking read.
 
-## Run locally
+## Run locally and in CI
 
-Requires Node 22 and Python 3.12. Run at the repository root:
+With Docker Desktop running, run this one command from the repository root:
 
 ```powershell
-npm ci
-npm ci --prefix contracts
-python -m pip install -r services/notifications/requirements-dev.txt
-npm run test:contracts
+docker compose -f compose.contracts.yml run --build --rm contract-tests
 ```
 
-Set `PACT_PYTHON` to a Python executable if using a virtual environment. The runner
-starts a loopback-only provider on a free port and stops it in a finally block.
-Locally it uses a temporary SQLite database. The CI contract job uses its own
-PostgreSQL 16 database; it never connects to the application database.
+The exact same command runs in the GitHub Actions contracts job. No host Node,
+Python, application stack or `.env.notifications` is needed. The first build needs
+internet to download images/packages; subsequent offline runs need those cached.
+
+Compose starts a dedicated PostgreSQL 16 database, waits for its healthcheck, then
+runs the real consumer against Pact and replays all five interactions against the
+real FastAPI provider/repository. Expected output includes:
+
+```text
+PASS: five consumer interactions generated using the real Notifications client.
+PASS: real FastAPI provider verified all five consumer interactions.
+```
+
+The command exits nonzero on a consumer mismatch or provider verification failure.
+Generated contracts are saved in `runtime/contracts/pacts/` and uploaded as a CI
+artifact. The tracked contract in `contracts/pacts/` is a reference snapshot; each
+run regenerates its own copy from the actual consumer.
+
+The test project is named `homeservice-contracts`, publishes no ports, and uses
+no application secrets or application database volumes. Its fixed database password
+is only for this isolated test database. Data is held in PostgreSQL tmpfs. To stop
+the test database after local use, run:
+
+```powershell
+docker compose -f compose.contracts.yml down --volumes --remove-orphans
+```
+
+This cleanup affects only the contract project. CI performs it in an `always()` step.
+The test image includes Node 22 and Python 3.12. Its Dockerfile-specific ignore file
+includes test sources while excluding host dependencies, secrets and local databases.
+
+For development without Docker, the existing `npm run test:contracts` command is
+still available after installing Node/Python dependencies. That optional local mode
+defaults to temporary SQLite; the documented Compose/CI command always uses PostgreSQL.
 
 The provider fixture lives outside the production service build. Its state setup
 endpoint and deterministic identity verifier are test-only. Real authorization,
@@ -33,17 +60,18 @@ These HTTP contracts do not verify RabbitMQ delivery or event schemas.
 
 ## GitHub Actions
 
-`.github/workflows/notifications-ci.yml` runs for pushes, pull requests and manual
+`.github/workflows/notifications-ci.yml` runs for pushes to main, pull requests and manual
 dispatch, with read-only repository permissions and no deployment credentials.
 
 1. Unit job: Node tests and Python tests.
-2. Contract job: regenerate contracts from the consumer, verify the real provider
-   against PostgreSQL, and retain Pact JSON as an Actions artifact.
+2. Contract job: run `docker compose -f compose.contracts.yml run --build --rm contract-tests`,
+   retaining generated Pact JSON as an Actions artifact and cleaning test containers.
 3. Build job: build both production Docker images without publishing them.
+4. Windows transport job: test result-file handling and clean-source export without Git.
 
 A failing check fails the workflow. Branch protection requiring these checks must
-be configured in GitHub separately. The workflow has to be pushed before its first
-GitHub run; local success is not evidence that GitHub Actions has already passed.
+be configured in GitHub separately. Use the Actions run for the exact commit being reviewed as CI evidence; local success
+alone is not proof of a GitHub run.
 No Pact Broker is needed: the consumer and provider share contracts in this repository.
 
 References: [Pact consumer testing](https://docs.pact.io/implementation_guides/javascript/docs/consumer)

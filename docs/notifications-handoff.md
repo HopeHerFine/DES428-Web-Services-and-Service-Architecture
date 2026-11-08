@@ -67,14 +67,27 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\check-notifications-fi
 การตรวจ source ใหม่ไม่ต้องติดตั้ง Git และไม่ได้ส่งโค้ดออกไป
 รายการ source มาจาก `.clean-source.json` โดยตัดรหัสผ่าน ฐานข้อมูล และไฟล์ที่สร้างตอนรันออก
 
-## สถานะที่พิสูจน์แล้วก่อนตรวจรับชุดใหม่
+## ผลที่ตรวจผ่านของชุด Notifications ก่อนปรับคำสั่ง Pact
 
-- Node unit tests 72 รายการ และ Python tests 31 รายการผ่าน
+- Node unit tests 72 รายการ และ Python tests 39 รายการผ่าน
 - Pact ฝั่งเว็บและ FastAPI ผ่าน 5 กรณี และตรวจพบสัญญาตอบกลับที่ผิดโดยตั้งใจ
 - บน Docker ผ่านการสมัคร/เข้าสู่ระบบจริง ตรวจ token/สิทธิ์ ระบบช้า/ล่ม
   ข้อความซ้ำ การ restart broker/worker และ Dashboard/Trace
-- ชุดนำเข้าข้อมูลเก่าและ root Compose ที่ปรับล่าสุดยังต้องรันตรวจรับบน Docker
-- CI เตรียมแล้ว แต่ยังไม่อ้างว่ารันผ่านบน GitHub จนกว่าจะส่งโค้ดและเห็นผลจริง
+- ชุดนำเข้าข้อมูลเก่าและการเปิดจาก source สะอาด/ฐานข้อมูลใหม่ผ่านบนเครื่องเจ้าของงานแล้ว
+- ชุดเดิมรวมเข้า main และ [CI ผ่านครบ](https://github.com/HopeHerFine/DES428-Web-Services-and-Service-Architecture/actions/runs/42493551442)
+  ที่ commit `3460a30`; การเปลี่ยนคำสั่ง Pact ในรอบนี้ต้องดูผล CI ของ commit ใหม่แยกต่างหาก
+
+## Contract Test ตาม brief
+
+ใช้คำสั่งเดียวกับ CI โดยไม่ต้องเปิดเว็บหรือตั้งค่า `.env.notifications` ก่อน:
+
+```powershell
+docker compose -f compose.contracts.yml run --build --rm contract-tests
+```
+
+ชุดทดสอบใช้ PostgreSQL แยก ไม่แตะฐานข้อมูลเว็บ ผล JSON อยู่ใน `runtime/contracts/pacts/`
+หลังทดสอบใช้ `docker compose -f compose.contracts.yml down --volumes --remove-orphans`
+เพื่อหยุดเฉพาะชุดทดสอบ ดูรายละเอียดและผลที่ควรได้ใน [คู่มือ Contract/CI](contracts-and-ci.md)
 
 ## แนวเดโม
 
