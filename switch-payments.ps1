@@ -72,7 +72,7 @@ try {
     $tools=$base+@('-f','compose.payments.yml','-f','compose.payments-cutover.yml')
     $selected=$tools
     Invoke-Checked ($tools+@('build','bootstrap','edemand','payments','payments-worker','cutover-node','cutover-import','cutover-read-check'))
-    Invoke-Checked ($tools+@('up','-d','--wait','--wait-timeout','360','bootstrap'))
+    Invoke-Checked ($tools+@('run','--rm','--no-deps','bootstrap'))
     $state=Read-Cutover 'status'
     if ($state.phase -eq 'external-pilot') { throw 'This project already uses the fresh Payments pilot. It has no legacy cutover to run.' }
     if ($RollbackBeforeOpen -and $state.phase -in @('legacy','rolled_back')) { throw 'There is no unfinished cutover to roll back.' }
@@ -130,3 +130,4 @@ try {
     if ($released) { Write-Host 'Release was committed. Do not restore an old wallet; use start-payments.ps1 to recover forward.' -ForegroundColor Yellow }
     throw $originalError
 } finally { Pop-Location }
+
