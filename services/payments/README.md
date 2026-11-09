@@ -35,7 +35,7 @@ docker compose -p payments-pilot -f docker-compose.yml -f compose.payments.yml u
 ```
 
 Do not enable the pilot against existing payment history: legacy intents,
-transactions or nonzero wallet balances are rejected until migration is implemented.
+transactions or nonzero wallet balances remain rejected pending verified live cutover.
 A project that enabled external Payments must use both Compose files on restart.
 
 Application: http://localhost:8080. Payments docs: http://localhost:8080/payment-docs.
@@ -97,8 +97,11 @@ real provider. Run it together with Notifications using the root command:
 See ../../docs/contracts-and-ci.md for scope, identity-test doubles and CI details.
 The owner has also reported a passing Windows `check-payments.ps1` rehearsal.
 
-This increment is **not yet the finished second seam**: legacy payment-history
-import, dedicated dashboard/fault rehearsal, offline/RAM
+History export/import tooling and its isolated rehearsal are now available in
+../../docs/payment-history.md. The real-source cutover is still guarded.
+
+This increment is **not yet the finished second seam**: verified live history
+cutover, dedicated dashboard/fault rehearsal, offline/RAM
 measurement for the combined stack, and the team's explicit Saga workflow/recovery
 evidence remain. The current asynchronous refund is a building block, not a claim
 that all Saga requirements are fulfilled. Do not replace the original project's

@@ -8,7 +8,7 @@ from opentelemetry import propagate
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
-from .db import Intent, Entry, Receipt, Outbox
+from .db import Intent, Entry, Receipt, Outbox, WalletOpening
 
 KINDS = ("billing.booking_created", "billing.booking_completed", "billing.booking_cancelled")
 
@@ -123,7 +123,7 @@ def settle(sessions, order_id, customer_id, key):
                 raise HTTPException(409, "Payment intent is not ready; retry after event delivery")
             if order.customer_id != customer_id:
                 raise HTTPException(403, "You do not own this payment")
-            if order.method != "gateway" or order.cancelled:
+            if order.method != "gateway" or order.cancelled or order.status not in {"requires_payment", "succeeded"}:
                 raise HTTPException(409, "This booking cannot be paid")
             if order.status == "requires_payment":
                 order.status = "succeeded"
@@ -146,9 +146,10 @@ def settle(sessions, order_id, customer_id, key):
 def wallet(sessions, provider_id):
     with sessions() as session:
         rows = session.scalars(select(Entry).where(Entry.provider_id == provider_id).order_by(Entry.id.desc())).all()
+        opening = session.get(WalletOpening, provider_id)
         return {"provider_id": provider_id,
-            "balance_cents": sum(r.amount_cents for r in rows if r.kind == "payout_credit"),
-            "commission_owed_cents": sum(r.amount_cents for r in rows if r.kind == "commission_owed"),
+            "balance_cents": (opening.balance_cents if opening else 0) + sum(r.amount_cents for r in rows if r.kind == "payout_credit" and r.status == "succeeded"),
+            "commission_owed_cents": (opening.commission_cents if opening else 0) + sum(r.amount_cents for r in rows if r.kind == "commission_owed" and r.status == "succeeded"),
             "transactions": [public_entry(row) for row in rows]}
 
 

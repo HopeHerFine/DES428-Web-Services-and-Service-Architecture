@@ -41,7 +41,8 @@
     "check-offline-memory.ps1",
     ".env.example",
     "compose.payments.yml",
-    "check-payments.ps1"
+    "check-payments.ps1",
+    "compose.payments-history.yml"
   ],
   "required": [
     "Dockerfile",
@@ -55,4 +56,3 @@
     "scripts/clean-source.ps1"
   ]
 }
-

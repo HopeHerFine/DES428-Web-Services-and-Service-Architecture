@@ -37,6 +37,11 @@ jobs:
         run: python -m pytest tests -q
       - name: Exercise browser payment, duplicate clicks, remote wallet and refund
         run: sh scripts/check-payments-ci.sh
+      - name: Rehearse SQLite history export and PostgreSQL import
+        run: docker compose -f compose.payments-history.yml run --build --rm history-check
+      - name: Remove disposable history rehearsal
+        if: always()
+        run: docker compose -f compose.payments-history.yml down --volumes --remove-orphans
   windows-transport:
     runs-on: windows-latest
     timeout-minutes: 5

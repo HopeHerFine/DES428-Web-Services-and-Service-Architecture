@@ -56,6 +56,22 @@ class Outbox(Base):
     published: Mapped[bool] = mapped_column(Boolean, default=False)
 
 
+class WalletOpening(Base):
+    __tablename__ = "wallet_openings"
+    provider_id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=False)
+    balance_cents: Mapped[int] = mapped_column(BigInteger)
+    commission_cents: Mapped[int] = mapped_column(BigInteger)
+
+
+class HistoryBatch(Base):
+    __tablename__ = "history_imports"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    source_hash: Mapped[str] = mapped_column(String(64))
+    snapshot_hash: Mapped[str] = mapped_column(String(64))
+    archive_json: Mapped[str] = mapped_column(Text)
+    report_json: Mapped[str] = mapped_column(Text)
+
+
 def database(url):
     engine = create_engine(url, pool_pre_ping=True)
     return engine, sessionmaker(engine, expire_on_commit=False)

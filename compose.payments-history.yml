@@ -1,0 +1,45 @@
+# Disposable synthetic rehearsal. No application volumes, secrets or published ports.
+name: homeservice-payments-history
+services:
+  history-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: payments_history_fixture
+      POSTGRES_USER: history_fixture
+      POSTGRES_PASSWORD: disposable-history-fixture
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U history_fixture -d payments_history_fixture']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+  history-source:
+    build:
+      context: .
+      target: runtime
+    command: [node, /app/payment-history-fixture.mjs]
+    network_mode: none
+    environment:
+      HISTORY_FIXTURE: synthetic
+    volumes:
+      - history-fixture:/app/data
+      - ./scripts/payment-history-fixture.mjs:/app/payment-history-fixture.mjs:ro
+      - ./scripts/export-payments-history.mjs:/app/export-payments-history.mjs:ro
+  history-check:
+    build: ./services/payments
+    command: [python, /checks/payments-history-probe.py]
+    environment:
+      PYTHONPATH: /service
+      DATABASE_URL: postgresql+psycopg://history_fixture:disposable-history-fixture@history-db:5432/payments_history_fixture
+      HISTORY_FIXTURE: synthetic
+    volumes:
+      - history-fixture:/history:ro
+      - ./test-helpers/payments-history-probe.py:/checks/payments-history-probe.py:ro
+    depends_on:
+      history-db:
+        condition: service_healthy
+      history-source:
+        condition: service_completed_successfully
+volumes:
+  history-fixture:
