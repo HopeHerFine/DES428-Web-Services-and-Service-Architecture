@@ -97,6 +97,9 @@ services:
       interval: 5s
       timeout: 3s
       retries: 30
+  prometheus:
+    volumes:
+      - ./observability/prometheus.payments.yml:/etc/prometheus/prometheus.yml:ro
   gateway:
     volumes:
       - ./gateway/nginx.payments.conf:/etc/nginx/nginx.conf:ro

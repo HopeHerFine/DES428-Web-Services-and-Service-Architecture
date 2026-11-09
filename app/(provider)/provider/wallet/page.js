@@ -10,6 +10,16 @@ export default async function WalletPage() {
   if (!session || session.role !== "provider") redirect("/provider/login");
   const wallet = await ownWallet(session.sub, "/provider/wallet");
 
+  if (!wallet) {
+    return (
+      <div>
+        <h1>Wallet</h1>
+        <p className="notice warn" role="status">Wallet is temporarily unavailable. Please try again.</p>
+        <a href="/provider/wallet">Try again</a>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1>Wallet</h1>

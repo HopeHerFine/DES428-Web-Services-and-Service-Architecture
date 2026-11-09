@@ -28,8 +28,8 @@ export default async function ProviderDashboard() {
       ) : null}
 
       <div className="grid" style={{ marginTop: 16 }}>
-        <div className="card"><h3>Wallet balance</h3><div className="price" style={{ fontSize: 22 }}>{money(wallet.balance_cents)}</div><div className="muted small">payable to you (gateway earnings)</div></div>
-        <div className="card"><h3>Commission owed</h3><div className="price" style={{ fontSize: 22 }}>{money(wallet.commission_owed_cents)}</div><div className="muted small">you owe the platform (COD)</div></div>
+        <div className="card"><h3>Wallet balance</h3><div className="price" style={{ fontSize: 22 }}>{wallet ? money(wallet.balance_cents) : "Unavailable"}</div><div className="muted small">payable to you (gateway earnings)</div></div>
+        <div className="card"><h3>Commission owed</h3><div className="price" style={{ fontSize: 22 }}>{wallet ? money(wallet.commission_owed_cents) : "Unavailable"}</div><div className="muted small">you owe the platform (COD)</div></div>
         <div className="card"><h3>Commission rate</h3><div className="price" style={{ fontSize: 22 }}>{profile.commission_pct}%</div></div>
         <div className="card"><h3>Rating</h3><div className="price" style={{ fontSize: 22 }}>★ {profile.rating_avg?.toFixed(1) ?? "0.0"}</div><div className="muted small">{profile.rating_count} reviews</div></div>
       </div>
