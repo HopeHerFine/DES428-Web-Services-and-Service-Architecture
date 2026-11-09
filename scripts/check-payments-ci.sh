@@ -9,6 +9,9 @@ cleanup() {
   compose down --volumes --remove-orphans
 }
 trap cleanup EXIT
+mkdir -p runtime/faults runtime/probes
+# The disposable fixture containers use a different UID from the runner.
+chmod 0777 runtime/faults runtime/probes
 compose config --quiet
 compose up --build -d --wait --wait-timeout 360
 for beat in scripts/beat[1-4]-*.sh; do sh "$beat"; done
