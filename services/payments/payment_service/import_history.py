@@ -22,7 +22,7 @@ class Strict(BaseModel):
 
 class OldOrder(Snapshot):
     status: Literal["awaiting", "confirmed", "started", "completed", "cancelled", "rescheduled"]
-    payment_status: Literal["unpaid", "paid", "refunded"]
+    payment_status: Literal["pending", "paid", "refunded"]
 
 
 class OldIntent(Strict):
@@ -111,7 +111,7 @@ def validate(history):
             raise ValueError("Legacy booking/payment intent relationship is incomplete")
         if order.payment_status in {"paid", "refunded"} and (intent is None or intent.status != "succeeded"):
             raise ValueError("Legacy settlement status is inconsistent")
-        if intent is not None and intent.status == "succeeded" and order.payment_status == "unpaid":
+        if intent is not None and intent.status == "succeeded" and order.payment_status == "pending":
             raise ValueError("Legacy succeeded intent has an unpaid booking")
     return intents
 
@@ -210,3 +210,4 @@ def main():
 
 if __name__=="__main__":
     main()
+
