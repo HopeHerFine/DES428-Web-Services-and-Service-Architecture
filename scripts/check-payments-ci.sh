@@ -9,9 +9,12 @@ cleanup() {
   compose down --volumes --remove-orphans
 }
 trap cleanup EXIT
+mkdir -p runtime/faults runtime/probes
+# The disposable fixture containers use a different UID from the runner.
+chmod 0777 runtime/faults runtime/probes
 compose config --quiet
 compose up --build -d --wait --wait-timeout 360
-compose run --rm --no-deps notifications-worker python -m app.smoke_payments
+for beat in scripts/beat[1-4]-*.sh; do sh "$beat"; done
 compose exec -T edemand node -e 'const D=require("better-sqlite3");const db=new D("/app/data/edemand.db",{readonly:true});for(const t of ["payment_intents","transactions"]){if(db.prepare("SELECT COUNT(*) AS n FROM "+t).get().n!==0)throw Error("Legacy payment table was written: "+t);} console.log("PASS: no payment writes in Booking SQLite");'
 compose restart payments payments-worker
 compose up -d --wait --wait-timeout 360

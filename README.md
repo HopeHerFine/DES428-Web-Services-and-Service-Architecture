@@ -28,6 +28,32 @@ See [raw-clone startup, reset and upgrade details](docs/canonical-boot.md). The 
 Demo accounts use `eDemand-2026!`: `nong@example.com`, `sparkle@example.com`,
 and `admin@edemand.test`. New registrations are linked to Keycloak.
 
+## Marker demos
+
+Start the fresh demo stack with `docker compose up` from the repository root.
+Wait for `docker compose ps` to show the gateway, Notifications, Payments and
+their dependencies ready. On Windows, open Git Bash in the same folder to run
+the shell scripts. Use the seeded accounts above if you also inspect the site.
+
+| Demo | Command | Expected evidence |
+| --- | --- | --- |
+| Happy path | `sh scripts/beat1-happy-path.sh` | Notifications browser probe and Payments probe report `PASS`. The payment flow shows `paid`, `cancellation_requested`, then `refunded` with one charge and one refund. |
+| Failure recovery | `sh scripts/beat2-failure-recovery.sh` | `PASS` for lost reply, slow reply and temporary unavailability. Retried writes return the original result. PostgreSQL records one write receipt for each scenario, including eight concurrent requests for one notification. |
+| Auth rejection | `sh scripts/beat3-auth-rejection.sh` | `PASS` with `401` for forged, expired and wrong-audience tokens. A valid Keycloak token returns `200`. |
+| Find the trace | `sh scripts/beat4-find-the-trace.sh` | `PASS` with a `trace_id` and `cross_service_parent_child: true`. Paste the ID into **Lookup by Trace ID** in Jaeger at http://localhost:16686 to see Monolith and Notifications in one trace. |
+
+These scripts create demo records and Beat 2 briefly changes the Notifications
+fault flag. Run them sequentially on the disposable demo project. The first
+run may download or build probe images.
+
+To reset the disposable demo data to first boot, run these commands from the
+repository root. The first command deletes the named demo project's volumes.
+
+```sh
+docker compose --project-name homeservice-capstone down --volumes --remove-orphans
+docker compose up
+```
+
 See [Notifications handoff](docs/notifications-handoff.md),
 [migration details](docs/notifications-migration.md), and
 [contract tests and CI](docs/contracts-and-ci.md).
