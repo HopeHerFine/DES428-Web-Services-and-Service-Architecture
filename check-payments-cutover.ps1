@@ -41,6 +41,7 @@ try {
     $env:COMPOSE_PROJECT_NAME = $testProject
     Push-Location $scratch
     try {
+        New-Item -ItemType Directory -Force -Path 'runtime/payments-cutover' | Out-Null
         & docker compose up --build -d --wait --wait-timeout 360
         if ($LASTEXITCODE -ne 0) { & docker compose logs --tail 60; throw 'Raw-source docker compose up failed.' }
         if (Test-Path -LiteralPath '.env.notifications') { throw 'Raw boot unexpectedly wrote host-side credentials.' }
@@ -86,3 +87,4 @@ if ($passed) {
       ConvertTo-Json | Set-Content -Encoding UTF8 (Join-Path $evidence 'payments-cutover-rehearsal-latest.json')
     Write-Host 'PASS: synthetic history cutover and pre-release rollback passed; original stack restored. Fixture copies retained.' -ForegroundColor Green
 }
+
