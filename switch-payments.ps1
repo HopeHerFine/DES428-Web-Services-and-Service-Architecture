@@ -71,7 +71,7 @@ try {
     $base=@('compose','--project-name',$project,'-f','docker-compose.yml')
     $tools=$base+@('-f','compose.payments.yml','-f','compose.payments-cutover.yml')
     $selected=$tools
-    Invoke-Checked ($tools+@('build','bootstrap','edemand','payments','payments-worker','cutover-node','cutover-import','cutover-read-check'))
+    Invoke-Checked ($tools+@('build','bootstrap','edemand','payments','payments-worker','keycloak-config','cutover-node','cutover-import','cutover-read-check'))
     Invoke-Checked ($tools+@('run','--rm','--no-deps','bootstrap'))
     $state=Read-Cutover 'status'
     if ($state.phase -eq 'external-pilot') { throw 'This project already uses the fresh Payments pilot. It has no legacy cutover to run.' }
@@ -95,6 +95,7 @@ try {
     if ($RollbackBeforeOpen) { Rollback-Frozen; $frozen=$false; return }
     Check-Imported 'import'
     if ($state.phase -eq 'prepared') { $state=Read-Cutover 'activate' }
+    Invoke-Checked ($selected+@('up','-d','--wait','--wait-timeout','360','keycloak','notifications'))
     Invoke-Checked ($selected+@('run','--rm','--no-deps','keycloak-config'))
     Invoke-Checked ($maintenance+@('up','-d','--wait','--wait-timeout','360','payments','payments-worker','edemand','cutover-probe-gateway'))
     Invoke-Checked ($maintenance+@('run','--rm','--no-deps','cutover-read-check'))
