@@ -3,7 +3,7 @@ Push-Location $PSScriptRoot
 . (Join-Path $PSScriptRoot 'scripts/probe-result.ps1')
 try {
     $docker = (Get-Command docker -ErrorAction Stop).Source
-    $compose = @('compose', '-f', 'docker-compose.yml')
+    $compose = @('compose', '-f', 'compose.migration-base.yml')
     New-Item -ItemType Directory -Path 'runtime\faults', 'runtime\probes', 'docs\evidence' -Force | Out-Null
     '{"mode":"none"}' | Set-Content -LiteralPath 'runtime\faults\notifications.json' -Encoding ascii
     Write-Host 'This local demo briefly delays/fails Notifications requests; normal behavior is restored in finally.'

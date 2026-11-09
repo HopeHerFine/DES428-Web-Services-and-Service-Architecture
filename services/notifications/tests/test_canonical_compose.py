@@ -9,7 +9,7 @@ spec.loader.exec_module(generator)
 
 
 def test_root_bootstrap_is_non_root_network_free_and_has_no_source_mount():
-    model=json.loads((ROOT/'docker-compose.yml').read_text())
+    model=json.loads((ROOT/'compose.migration-base.yml').read_text())
     bootstrap=model['services']['bootstrap']
     assert bootstrap['network_mode']=='none'
     assert bootstrap['cap_drop']==['ALL']
@@ -21,7 +21,7 @@ def test_root_bootstrap_is_non_root_network_free_and_has_no_source_mount():
 
 
 def test_services_get_only_their_own_read_only_subdirectory():
-    model=json.loads((ROOT/'docker-compose.yml').read_text())
+    model=json.loads((ROOT/'compose.migration-base.yml').read_text())
     for name in generator.SCOPED:
         service=model['services'][name]
         mount=next(m for m in service['volumes'] if m['source']=='stack-config')

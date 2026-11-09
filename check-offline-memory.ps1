@@ -1,11 +1,12 @@
-param([ValidateRange(10,180)][int]$ObserveSeconds = 60)
+param([ValidateRange(10,180)][int]$ObserveSeconds = 60,[switch]$Combined)
 $ErrorActionPreference = 'Stop'
 Push-Location $PSScriptRoot
 . (Join-Path $PSScriptRoot 'scripts/clean-source.ps1')
 . (Join-Path $PSScriptRoot 'scripts/memory-sample.ps1')
 $docker = (Get-Command docker -ErrorAction Stop).Source
 $previousProject = $env:COMPOSE_PROJECT_NAME
-$project = 'noti-offline-' + [Guid]::NewGuid().ToString('N').Substring(0,12)
+$prefix = if ($Combined) { 'capstone-offline-' } else { 'noti-offline-' }
+$project = $prefix + [Guid]::NewGuid().ToString('N').Substring(0,12)
 $scratch = Join-Path $PSScriptRoot ('runtime/offline/' + $project)
 $stopFile = Join-Path $scratch 'stop-memory-sampling'
 $sampleFile = Join-Path $scratch 'memory-samples.jsonl'
@@ -26,10 +27,20 @@ try {
     if ($engineBytes -le 0 -or $engineBytes -gt 8589934592) {
         throw 'This rehearsal requires Docker Engine memory at or below 8 GiB. Set the Docker/WSL memory limit first, then retry.'
     }
-    $original = @('compose','-f','docker-compose.yml')
+    $original = @('compose','-f','compose.migration-base.yml')
     $raw = & $docker @original config --format json
     if ($LASTEXITCODE -ne 0) { throw 'Original stack configuration is invalid.' }
     $originalProject = (($raw -join "`n") | ConvertFrom-Json).name
+    if ($Combined) {
+        $receiptPath = Join-Path $PSScriptRoot 'runtime/payments-cutover/active.json'
+        if (Test-Path -LiteralPath $receiptPath) {
+            $receipt = Get-Content -Raw -LiteralPath $receiptPath | ConvertFrom-Json
+            if ($receipt.phase -ne 'released' -or $receipt.project -notmatch '^[a-z0-9][a-z0-9_-]*$') {
+                throw 'Existing Payments stack is not in a released state.'
+            }
+            $originalProject = $receipt.project
+        }
+    }
     $running = @(& $docker ps -q --filter "label=com.docker.compose.project=$originalProject")
     if ($LASTEXITCODE -ne 0) { throw 'Cannot inspect original stack.' }
     New-Item -ItemType Directory -Force -Path $scratch | Out-Null
@@ -41,21 +52,30 @@ try {
     }
     if (Test-Path (Join-Path $scratch '.env.notifications')) { throw 'Clean source unexpectedly inherited local credentials.' }
     $env:COMPOSE_PROJECT_NAME = $project
-    & (Join-Path $scratch 'start-notifications.ps1') -PrepareOnly
+    if (-not $Combined) { & (Join-Path $scratch 'start-notifications.ps1') -PrepareOnly }
     Push-Location $scratch
     try {
-        $prepare = @('compose','-f','docker-compose.yml','--profile','identity-config')
-        Write-Host 'ONLINE PREPARATION: pulling tools and building two local application images.'
-        & $docker @prepare pull keycloak gateway notifications-db rabbitmq jaeger prometheus grafana
+        $prepare = @('compose','-f','compose.migration-base.yml','--profile','identity-config')
+        $tools = @('keycloak','gateway','notifications-db','rabbitmq','jaeger','prometheus','grafana')
+        $apps = @('edemand','notifications')
+        $paymentImageArg = @()
+        if ($Combined) {
+            $prepare = @('compose','-f','docker-compose.yml')
+            $tools += 'payments-db'
+            $apps += 'payments'
+            $paymentImageArg = @('--payments-image', "$project-payments")
+        }
+        Write-Host 'ONLINE PREPARATION: caching tools and building application images.'
+        & $docker @prepare pull @tools
         if ($LASTEXITCODE -ne 0) { throw 'Unable to cache tool images.' }
-        & $docker @prepare build edemand notifications
+        & $docker @prepare build @apps
         if ($LASTEXITCODE -ne 0) { throw 'Unable to build local application images.' }
         $raw = & $docker @prepare config --format json
         if ($LASTEXITCODE -ne 0) { throw 'Unable to resolve prepared configuration.' }
         [IO.File]::WriteAllText((Join-Path $scratch 'resolved.json'),($raw -join "`n"),[Text.UTF8Encoding]::new($false))
         $appImage = "$project-edemand"
         $apiImage = "$project-notifications"
-        & $docker run --rm --user 0:0 -v "${scratch}:/source" -w /source $apiImage python scripts/offline_compose.py --input resolved.json --output docker-compose.yml --project $project --source-root $scratch --app-image $appImage --api-image $apiImage
+        & $docker run --rm --user 0:0 -v "${scratch}:/source" -w /source $apiImage python scripts/offline_compose.py --input resolved.json --output docker-compose.yml --project $project --source-root $scratch --app-image $appImage --api-image $apiImage @paymentImageArg
         if ($LASTEXITCODE -ne 0) { throw 'Unable to freeze offline configuration.' }
         & $docker compose -f docker-compose.yml config --quiet
         if ($LASTEXITCODE -ne 0) { throw 'Frozen offline configuration is invalid.' }
@@ -65,9 +85,9 @@ try {
             if ($LASTEXITCODE -ne 0) { throw "Prepared image is missing: $image" }
         }
         if ($running.Count -gt 0) {
-            & $docker compose --project-name $originalProject -f (Join-Path $PSScriptRoot 'docker-compose.yml') down
-            if ($LASTEXITCODE -ne 0) { throw 'Unable to release original stack ports.' }
             $originalStopped = $true
+            & $docker stop @running
+            if ($LASTEXITCODE -ne 0) { throw 'Unable to release original stack ports.' }
         }
         $sampler = Start-NotificationsMemorySampler -DockerExe $docker -ProjectName $project -StopFile $stopFile `
             -OutputFile $sampleFile -DiagnosticFile $diagnosticFile -SamplerScript (Join-Path $PSScriptRoot 'scripts/memory-sampler.ps1') `
@@ -83,6 +103,10 @@ try {
             if ($LASTEXITCODE -ne 0) { throw "Offline functional check failed: $module" }
         }
         $workloadStart = [DateTime]::UtcNow
+        if ($Combined) {
+            & $docker compose run --rm --no-deps notifications-worker python -m app.smoke_payments --saga-only
+            if ($LASTEXITCODE -ne 0) { throw 'Offline refund Saga failed.' }
+        }
         & $docker compose run --rm --no-deps -v './runtime/probes:/probe-data' notifications-worker python -m app.offline_workload --seconds $ObserveSeconds --report /probe-data/offline-workload.json
         if ($LASTEXITCODE -ne 0) { throw 'Authenticated offline workload failed.' }
         $workloadEnd = [DateTime]::UtcNow
@@ -122,7 +146,7 @@ try {
     }
     $env:COMPOSE_PROJECT_NAME = $previousProject
     if ($originalStopped) {
-        & $docker compose --project-name $originalProject -f docker-compose.yml up -d --wait --wait-timeout 360
+        & $docker start @running
         $restoreExit = $LASTEXITCODE
     }
     Pop-Location
@@ -146,11 +170,12 @@ $peak = [long](($samples | Measure-Object -Property total_bytes -Maximum).Maximu
 if ($peak -ge 8589934592) { throw 'Sampled container usage exceeded 8 GiB.' }
 $evidence = Join-Path $PSScriptRoot 'docs/evidence'
 New-Item -ItemType Directory -Force -Path $evidence | Out-Null
-$samples | ConvertTo-Json -Depth 8 | Set-Content -Encoding UTF8 (Join-Path $evidence 'offline-memory-samples.json')
-@{result='PASS';probe='offline-memory';project=$project;source_files=$files.Count;
+$evidencePrefix = if ($Combined) { 'combined-offline-memory' } else { 'offline-memory' }
+$samples | ConvertTo-Json -Depth 8 | Set-Content -Encoding UTF8 (Join-Path $evidence "$evidencePrefix-samples.json")
+@{result='PASS';probe=$evidencePrefix;combined=[bool]$Combined;refund_saga_verified=[bool]$Combined;project=$project;source_files=$files.Count;
     cached_images=$images.Count;pulls_and_builds_during_boot=$false;internal_network=$true;
     engine_memory_bytes=$engineBytes;peak_sampled_container_bytes=$peak;samples=$samples.Count;workload_samples=$loadSamples.Count;discarded_sampling_polls=$samplingErrors.Count;
     workload=$loadResult;memory_method='Docker CLI usage excluding cache; sampled maximum, not continuous peak';
     fresh_volumes=$true;original_stack_restored=[bool]$originalStopped;recorded_at=[DateTime]::UtcNow.ToString('o')} |
-    ConvertTo-Json -Depth 8 | Set-Content -Encoding UTF8 (Join-Path $evidence 'offline-memory-latest.json')
+    ConvertTo-Json -Depth 8 | Set-Content -Encoding UTF8 (Join-Path $evidence "$evidencePrefix-latest.json")
 Write-Host ('PASS: offline cold boot; peak sampled containers {0:N2} GiB within Docker Engine {1:N2} GiB.' -f ($peak/1GB),($engineBytes/1GB)) -ForegroundColor Green

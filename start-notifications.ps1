@@ -19,7 +19,7 @@ try {
 
     New-Item -ItemType Directory -Path 'runtime\faults', 'runtime\probes' -Force | Out-Null
     '{"mode":"none"}' | Set-Content -LiteralPath 'runtime\faults\notifications.json' -Encoding ascii
-    $composeArgs = @('compose', '-f', 'docker-compose.yml')
+    $composeArgs = @('compose', '-f', 'compose.migration-base.yml')
     if ($WithMonolith) { $composeArgs += @('--profile', 'migration') }
     & $dockerExe @composeArgs config --quiet
     if ($LASTEXITCODE -ne 0) { throw 'Compose settings validation failed.' }

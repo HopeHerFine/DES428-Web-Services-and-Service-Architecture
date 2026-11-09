@@ -6,7 +6,7 @@ Push-Location $PSScriptRoot
 $previousProject = $env:COMPOSE_PROJECT_NAME
 $testProject = 'payments-pilot-' + ([Guid]::NewGuid().ToString('N').Substring(0,12))
 $scratch = Join-Path ([IO.Path]::GetTempPath()) $testProject
-$compose = @('compose','-f','docker-compose.yml')
+$compose = @('compose','-f','compose.migration-base.yml')
 $originalStopped = $false
 $passed = $false
 try {
@@ -41,11 +41,11 @@ try {
     $env:COMPOSE_PROJECT_NAME = $testProject
     Push-Location $scratch
     try {
-        & docker compose -f docker-compose.yml -f compose.payments.yml up --build -d --wait --wait-timeout 360
-        if ($LASTEXITCODE -ne 0) { & docker compose -f docker-compose.yml -f compose.payments.yml logs --tail 60; throw 'Raw-source docker compose up failed.' }
+        & docker compose -f compose.migration-base.yml -f compose.payments.yml up --build -d --wait --wait-timeout 360
+        if ($LASTEXITCODE -ne 0) { & docker compose -f compose.migration-base.yml -f compose.payments.yml logs --tail 60; throw 'Raw-source docker compose up failed.' }
         if (Test-Path -LiteralPath '.env.notifications') { throw 'Raw boot unexpectedly wrote host-side credentials.' }
         foreach ($module in @('smoke_payments')) {
-            & docker compose -f docker-compose.yml -f compose.payments.yml run --rm --no-deps notifications-worker python -m "app.$module"
+            & docker compose -f compose.migration-base.yml -f compose.payments.yml run --rm --no-deps notifications-worker python -m "app.$module"
             if ($LASTEXITCODE -ne 0) { throw "Raw-source integration check failed: $module" }
         }
         $passed = $true
@@ -53,10 +53,10 @@ try {
 } finally {
     if ($originalStopped) {
         # Delete only volumes belonging to this freshly generated test project.
-        & docker compose --project-name $testProject -f (Join-Path $scratch 'docker-compose.yml') -f (Join-Path $scratch 'compose.payments.yml') down --volumes --remove-orphans
+        & docker compose --project-name $testProject -f (Join-Path $scratch 'compose.migration-base.yml') -f (Join-Path $scratch 'compose.payments.yml') down --volumes --remove-orphans
         $cleanupExit = $LASTEXITCODE
         $env:COMPOSE_PROJECT_NAME = $previousProject
-        & docker compose --project-name $originalProject -f docker-compose.yml up -d --wait --wait-timeout 360
+        & docker compose --project-name $originalProject -f compose.migration-base.yml up -d --wait --wait-timeout 360
         $restoreExit = $LASTEXITCODE
         if ($cleanupExit -ne 0 -or $restoreExit -ne 0) { throw 'Clean-test cleanup or original-stack restoration failed.' }
     }
@@ -67,8 +67,7 @@ if ($passed) {
     $evidence = Join-Path $PSScriptRoot 'docs/evidence'
     New-Item -ItemType Directory -Force -Path $evidence | Out-Null
     @{result='PASS';probe='payments-pilot';source_files=$files.Count;fresh_project=$testProject;
-      inherited_secrets=$false;host_settings_required=$false;boot_command='docker compose -f docker-compose.yml -f compose.payments.yml up';fresh_volumes=$true;original_stack_restored=$true;recorded_at=[DateTime]::UtcNow.ToString('o')} |
+      inherited_secrets=$false;host_settings_required=$false;boot_command='docker compose -f compose.migration-base.yml -f compose.payments.yml up';fresh_volumes=$true;original_stack_restored=$true;recorded_at=[DateTime]::UtcNow.ToString('o')} |
       ConvertTo-Json | Set-Content -Encoding UTF8 (Join-Path $evidence 'payments-pilot-latest.json')
     Write-Host 'PASS: Payments pilot passed with isolated data; original Notifications stack restored.' -ForegroundColor Green
 }
-

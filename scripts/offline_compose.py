@@ -10,17 +10,21 @@ LIMITS = {'keycloak':'896m','gateway':'128m','edemand':'1024m','notifications-db
 PYTHON_SERVICES = {'notifications','notifications-worker','keycloak-config','bootstrap'}
 
 
-def freeze(model, project, source_root, app_image, api_image):
+def freeze(model, project, source_root, app_image, api_image, payments_image=None):
     model = deepcopy(model)
     prefix = source_root.replace('\\','/').rstrip('/') + '/'
     services = {}
     limits={**LIMITS,**({'bootstrap':'256m'} if 'bootstrap' in model['services'] else {})}
+    if payments_image:
+        limits.update({'payments-db':'512m','payments':'384m','payments-worker':'384m'})
     for name in limits:
         service = model['services'][name]
         service.pop('build',None)
         service.pop('profiles',None)
         if name in PYTHON_SERVICES:
             service['image'] = api_image
+        elif name in {'payments', 'payments-worker'}:
+            service['image'] = payments_image
         elif name == 'edemand':
             service['image'] = app_image
         if not service.get('image'):
@@ -54,9 +58,10 @@ def main():
     parser=argparse.ArgumentParser()
     for name in ('input','output','project','source-root','app-image','api-image'):
         parser.add_argument('--'+name,required=True)
+    parser.add_argument('--payments-image')
     args=parser.parse_args()
     model=json.loads(Path(args.input).read_text(encoding='utf-8-sig'))
-    result=freeze(model,args.project,args.source_root,args.app_image,args.api_image)
+    result=freeze(model,args.project,args.source_root,args.app_image,args.api_image,args.payments_image)
     # The resolved file contains newly generated local credentials. Keep it in
     # the ignored test directory; never publish it with the source repository.
     Path(args.output).write_text(json.dumps(result,indent=2),encoding='utf-8')

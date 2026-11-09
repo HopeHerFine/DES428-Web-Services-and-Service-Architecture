@@ -3,7 +3,7 @@ Push-Location $PSScriptRoot
 . (Join-Path $PSScriptRoot 'scripts/probe-result.ps1')
 try {
     $docker = (Get-Command docker -ErrorAction Stop).Source
-    $compose = @('compose', '-f', 'docker-compose.yml')
+    $compose = @('compose', '-f', 'compose.migration-base.yml')
     New-Item -ItemType Directory -Path 'runtime\probes', 'docs\evidence' -Force | Out-Null
     function Run-RecoveryStage([string]$stage) {
         & $docker @compose run --rm --no-deps broker-recovery python -m app.broker_recovery $stage

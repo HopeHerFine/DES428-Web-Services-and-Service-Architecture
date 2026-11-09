@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 $repo = Split-Path -Parent $PSScriptRoot
 $project = 'homeservice-saga-' + [guid]::NewGuid().ToString('N').Substring(0,12)
 $override = Join-Path ([IO.Path]::GetTempPath()) "$project.yml"
-$stack = @('--project-name', $project, '-f', 'docker-compose.yml', '-f', 'compose.payments.yml', '-f', $override)
+$stack = @('--project-name', $project, '-f', 'compose.migration-base.yml', '-f', 'compose.payments.yml', '-f', $override)
 
 Push-Location -LiteralPath $repo
 try {

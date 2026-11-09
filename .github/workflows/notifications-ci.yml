@@ -136,7 +136,7 @@ jobs:
         run: sh scripts/check-canonical-boot.sh
       - name: Show canonical stack logs
         if: failure()
-        run: COMPOSE_PROJECT_NAME=noti-ci-raw docker compose logs --no-color --tail 80
+        run: COMPOSE_PROJECT_NAME=noti-ci-raw docker compose -f compose.migration-base.yml logs --no-color --tail 80
       - name: Remove runner-only test volumes
         if: always()
-        run: COMPOSE_PROJECT_NAME=noti-ci-raw docker compose down --volumes --remove-orphans
+        run: COMPOSE_PROJECT_NAME=noti-ci-raw docker compose -f compose.migration-base.yml down --volumes --remove-orphans
