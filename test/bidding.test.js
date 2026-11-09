@@ -49,6 +49,18 @@ test("bidding", async (t) => {
     assert.equal(dupe.status, 409, "one live bid per provider per job (UNIQUE)");
   });
 
+  await t.test("only the customer who owns a job can read its detail", async () => {
+    const job = await postJob(customer, "10:00");
+    assert.equal(job.status, 201);
+    const params = { id: String(job.body.id) };
+    const stranger = await registerCustomer();
+    const owner = await call(jobDetail.GET, { token: customer.token, params });
+    const outsider = await call(jobDetail.GET, { token: stranger.token, params });
+    assert.equal(owner.status, 200);
+    assert.equal(owner.body.job.id, job.body.id);
+    assert.equal(outsider.status, 403);
+  });
+
   await t.test("BID-ACCEPT RACE: two concurrent accepts of two bids -> one 200, one 409; job booked; losers rejected", async () => {
     const job = await postJob(customer, "10:00");
     const jobId = String(job.body.id);
