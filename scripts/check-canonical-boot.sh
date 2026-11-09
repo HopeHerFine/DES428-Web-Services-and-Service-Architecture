@@ -41,11 +41,11 @@ text+='JWT_ISSUER=http://localhost:8080/auth/realms/homeservice\n'
 text+='JWT_JWKS_URL=http://keycloak:8080/auth/realms/homeservice/protocol/openid-connect/certs\n'
 Path('.env.notifications').write_text(text)
 PY
-docker compose -f compose.migration-base.yml --env-file .env.notifications -f compose.notifications.yml up --build -d --wait --wait-timeout 360
-docker compose -f compose.migration-base.yml --env-file .env.notifications -f compose.notifications.yml run --build --rm --no-deps keycloak-config
-docker compose -f compose.migration-base.yml --env-file .env.notifications -f compose.notifications.yml run --rm --no-deps notifications-worker python -m app.smoke_registration
+docker compose --env-file .env.notifications -f compose.notifications.yml up --build -d --wait --wait-timeout 360
+docker compose --env-file .env.notifications -f compose.notifications.yml run --build --rm --no-deps keycloak-config
+docker compose --env-file .env.notifications -f compose.notifications.yml run --rm --no-deps notifications-worker python -m app.smoke_registration
 customers > runtime/ci/customers-before-adoption
-docker compose -f compose.migration-base.yml --env-file .env.notifications -f compose.notifications.yml down
+docker compose --env-file .env.notifications -f compose.notifications.yml down
 docker compose -f compose.migration-base.yml up --build -d --wait --wait-timeout 360
 customers > runtime/ci/customers-after-adoption
 cmp runtime/ci/customers-before-adoption runtime/ci/customers-after-adoption
