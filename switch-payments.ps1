@@ -3,7 +3,7 @@ param([switch]$RollbackBeforeOpen,[switch]$PauseBeforeOpen)
 $ErrorActionPreference='Stop'
 if ($RollbackBeforeOpen -and $PauseBeforeOpen) { throw 'Choose either pause or rollback.' }
 Push-Location $PSScriptRoot
-$base=@('compose','-f','docker-compose.yml')
+$base=@('compose','-f','compose.migration-base.yml')
 $tools=$base+@('-f','compose.payments.yml','-f','compose.payments-cutover.yml')
 $selected=$tools
 $maintenance=$null
@@ -68,7 +68,7 @@ try {
     $project=(($raw -join "`n")|ConvertFrom-Json).name
     if ($project -notmatch '^[a-z0-9][a-z0-9_-]*$') { throw 'Invalid Compose project name.' }
     # Pin the same namespace even when the caller started it with -p previously.
-    $base=@('compose','--project-name',$project,'-f','docker-compose.yml')
+    $base=@('compose','--project-name',$project,'-f','compose.migration-base.yml')
     $tools=$base+@('-f','compose.payments.yml','-f','compose.payments-cutover.yml')
     $selected=$tools
     Invoke-Checked ($tools+@('build','bootstrap','edemand','payments','payments-worker','keycloak-config','cutover-node','cutover-import','cutover-read-check'))
@@ -131,4 +131,3 @@ try {
     if ($released) { Write-Host 'Release was committed. Do not restore an old wallet; use start-payments.ps1 to recover forward.' -ForegroundColor Yellow }
     throw $originalError
 } finally { Pop-Location }
-

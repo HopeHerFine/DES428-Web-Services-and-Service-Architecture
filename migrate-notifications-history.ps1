@@ -6,7 +6,7 @@ $snapshotPath = Join-Path $PSScriptRoot ('runtime/probes/' + $snapshotName)
 $reportPath = Join-Path $PSScriptRoot ('runtime/probes/' + $reportName)
 try {
     New-Item -ItemType Directory -Force -Path 'runtime/probes' | Out-Null
-    $compose = @('compose','-f','docker-compose.yml')
+    $compose = @('compose','-f','compose.migration-base.yml')
     # Keep build/progress output separate from data. JSON travels in shared UTF-8
     # files, never through Compose stdout or PowerShell's native text pipeline.
     & docker @compose build legacy-export notifications-worker

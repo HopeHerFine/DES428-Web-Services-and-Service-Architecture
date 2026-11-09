@@ -2,7 +2,7 @@
 set -eu
 test "${GITHUB_ACTIONS:-}" = true || { echo 'Disposable CI runner only.' >&2; exit 1; }
 export COMPOSE_PROJECT_NAME=payments-ci
-compose() { docker compose -f docker-compose.yml -f compose.payments.yml "$@"; }
+compose() { docker compose "$@"; }
 cleanup() {
   code=$?
   if [ "$code" -ne 0 ]; then compose logs --no-color --tail 70; fi

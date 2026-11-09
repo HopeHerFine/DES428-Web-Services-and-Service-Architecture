@@ -6,7 +6,7 @@ Push-Location $PSScriptRoot
 $previousProject = $env:COMPOSE_PROJECT_NAME
 $testProject = 'payments-rehearsal-' + ([Guid]::NewGuid().ToString('N').Substring(0,12))
 $scratch = Join-Path ([IO.Path]::GetTempPath()) $testProject
-$compose = @('compose','-f','docker-compose.yml')
+$compose = @('compose','-f','compose.migration-base.yml')
 $originalStopped = $false
 $passed = $false
 try {
@@ -52,13 +52,13 @@ try {
         try { $response=Invoke-WebRequest -Uri 'http://localhost:8080/gateway-health' -UseBasicParsing -TimeoutSec 2; $publicOpen=$response.StatusCode -eq 200 } catch {}
         if ($publicOpen) { throw 'Public ingress unexpectedly opened before cutover release.' }
         & (Join-Path $scratch 'switch-payments.ps1') -RollbackBeforeOpen
-        & docker compose -f docker-compose.yml -f compose.payments.yml -f compose.payments-cutover.yml run --rm --no-deps -e GATEWAY_CONNECT_HOST=gateway cutover-read-check python -m app.check_payments_cutover --legacy
+        & docker compose -f compose.migration-base.yml -f compose.payments.yml -f compose.payments-cutover.yml run --rm --no-deps -e GATEWAY_CONNECT_HOST=gateway cutover-read-check python -m app.check_payments_cutover --legacy
         if ($LASTEXITCODE -ne 0) { throw 'Legacy wallet did not survive pre-release rollback.' }
         & (Join-Path $scratch 'switch-payments.ps1')
         $receipt=Get-Content -Raw -Encoding UTF8 'runtime/payments-cutover/active.json' | ConvertFrom-Json
         if ($receipt.phase -ne 'released' -or $receipt.run_id -notmatch '^[a-f0-9-]{36}$') { throw 'Invalid cutover receipt.' }
         $volumeOverride=Join-Path $scratch ('runtime/payments-cutover/'+$receipt.run_id+'/volume.json')
-        & docker compose -f docker-compose.yml -f compose.payments.yml -f $volumeOverride run --rm --no-deps notifications-worker python -m app.smoke_payments
+        & docker compose -f compose.migration-base.yml -f compose.payments.yml -f $volumeOverride run --rm --no-deps notifications-worker python -m app.smoke_payments
         if ($LASTEXITCODE -ne 0) { throw 'New financial operations failed after history cutover.' }
         & (Join-Path $scratch 'start-payments.ps1')
         $passed = $true
@@ -66,14 +66,14 @@ try {
 } finally {
     if ($originalStopped) {
         # Stop only the unique fixture project. Backups and imported copies are retained.
-        & docker compose --project-name $testProject -f (Join-Path $scratch 'docker-compose.yml') -f (Join-Path $scratch 'compose.payments.yml') -f (Join-Path $scratch 'compose.payments-cutover.yml') down --remove-orphans
+        & docker compose --project-name $testProject -f (Join-Path $scratch 'compose.migration-base.yml') -f (Join-Path $scratch 'compose.payments.yml') -f (Join-Path $scratch 'compose.payments-cutover.yml') down --remove-orphans
         $cleanupExit = $LASTEXITCODE
         $env:COMPOSE_PROJECT_NAME = $previousProject
         $activeReceipt=Join-Path $PSScriptRoot 'runtime/payments-cutover/active.json'
         $isMigrated=$false
         if (Test-Path -LiteralPath $activeReceipt) { $isMigrated=((Get-Content -Raw -Encoding UTF8 $activeReceipt | ConvertFrom-Json).phase -eq 'released') }
         if ($isMigrated) { & (Join-Path $PSScriptRoot 'start-payments.ps1'); $restoreExit=0 }
-        else { & docker compose --project-name $originalProject -f docker-compose.yml up -d --wait --wait-timeout 360; $restoreExit=$LASTEXITCODE }
+        else { & docker compose --project-name $originalProject -f compose.migration-base.yml up -d --wait --wait-timeout 360; $restoreExit=$LASTEXITCODE }
         if ($cleanupExit -ne 0 -or $restoreExit -ne 0) { throw 'Clean-test cleanup or original-stack restoration failed.' }
     }
     $env:COMPOSE_PROJECT_NAME = $previousProject
@@ -87,4 +87,3 @@ if ($passed) {
       ConvertTo-Json | Set-Content -Encoding UTF8 (Join-Path $evidence 'payments-cutover-rehearsal-latest.json')
     Write-Host 'PASS: synthetic history cutover and pre-release rollback passed; original stack restored. Fixture copies retained.' -ForegroundColor Green
 }
-
