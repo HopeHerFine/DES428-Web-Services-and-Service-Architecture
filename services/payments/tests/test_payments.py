@@ -1,6 +1,7 @@
 import json
 import os
 from concurrent.futures import ThreadPoolExecutor
+from threading import Barrier
 from uuid import uuid4
 import jwt
 import pytest
@@ -141,8 +142,14 @@ def test_real_postgres_concurrent_settlement(db):
         pytest.skip("Row-lock concurrency is verified on PostgreSQL in CI")
     consume(sessions, event())
     consume(sessions, event("completed"))
+    ready = Barrier(8, timeout=10)
+
+    def pay(n):
+        ready.wait()
+        return settle(sessions, 8001, 1, f"click-{n}")
+
     with ThreadPoolExecutor(max_workers=8) as pool:
-        results = list(pool.map(lambda n: settle(sessions, 8001, 1, "click-" + str(n)), range(8)))
+        results = list(pool.map(pay, range(8)))
     assert all(result["status"] == "succeeded" for result in results)
     assert count(sessions, Entry, kind="charge") == 1
     assert count(sessions, Entry, kind="payout_credit") == 1
@@ -169,3 +176,29 @@ def test_real_postgres_cancel_and_pay_race(db):
         assert intent.status in {"refunded", "cancelled"}
     assert count(sessions, Entry, kind="charge") == count(sessions, Entry, kind="refund")
     assert wallet(sessions, 1)["balance_cents"] == 0
+
+def test_real_postgres_completion_and_payment_race(db):
+    engine, sessions = db
+    if engine.dialect.name != "postgresql":
+        pytest.skip("Row-lock concurrency is verified on PostgreSQL in CI")
+    consume(sessions, event())
+    completed = event("completed")
+    ready = Barrier(2, timeout=10)
+
+    def pay():
+        ready.wait()
+        return settle(sessions, 8001, 1, "completion-race")
+
+    def finish():
+        ready.wait()
+        return consume(sessions, completed)
+
+    with ThreadPoolExecutor(max_workers=2) as pool:
+        payment = pool.submit(pay)
+        completion = pool.submit(finish)
+        assert payment.result(timeout=15)["status"] == "succeeded"
+        assert completion.result(timeout=15) is True
+
+    assert count(sessions, Entry, order_id=8001, kind="charge") == 1
+    assert count(sessions, Entry, order_id=8001, kind="payout_credit") == 1
+    assert wallet(sessions, 1)["balance_cents"] == 96300
