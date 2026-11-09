@@ -12,6 +12,7 @@ from sqlalchemy.exc import SQLAlchemyError
 from .db import Base, Outbox, database
 from .domain import Event, KINDS, consume
 from .telemetry import setup
+from .target import verify_target
 
 EXCHANGE = "homeservice.events"
 QUEUE = "payments.events"
@@ -59,12 +60,14 @@ def main():
         connection = None
         try:
             Base.metadata.create_all(engine)
+            verify_target(sessions)
             connection = pika.BlockingConnection(pika.URLParameters(os.environ["RABBITMQ_URL"]))
             channel = connection.channel()
             topology(channel)
             channel.confirm_delivery()
             channel.basic_qos(prefetch_count=1)
             while connection.is_open:
+                verify_target(sessions)
                 method, properties, body = channel.basic_get(QUEUE, auto_ack=False)
                 if method:
                     try:
@@ -81,7 +84,7 @@ def main():
                 publish(sessions, channel)
                 Path("/tmp/payments-worker-heartbeat").touch()
                 connection.process_data_events(time_limit=0.2)
-        except (pika.exceptions.AMQPError, SQLAlchemyError, OSError):
+        except (pika.exceptions.AMQPError, SQLAlchemyError, OSError, ValueError):
             logger.warning("Payments dependency unavailable; unacknowledged messages retained")
             time.sleep(3)
         finally:
@@ -91,4 +94,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

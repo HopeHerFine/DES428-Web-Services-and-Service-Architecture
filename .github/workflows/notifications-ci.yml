@@ -10,6 +10,13 @@ concurrency:
   group: notifications-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  payments-cutover:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - name: Rehearse live-style cutover and rollback with synthetic source history
+        run: sh scripts/check-payments-cutover-ci.sh
   payments:
     runs-on: ubuntu-24.04
     timeout-minutes: 25

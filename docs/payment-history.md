@@ -1,7 +1,7 @@
 # Payments history: import tooling and isolated rehearsal
 
-The importer/exporter are implemented. Live cutover of the original installation
-is a separate operation and remains blocked by the monolith's migration guard.
+The importer/exporter are implemented. The guarded live cutover and rollback
+procedure is described in [payments-cutover.md](payments-cutover.md).
 Do not bypass that guard or run these tools against a changing source. The safe
 command available now is a **synthetic rehearsal**, using dedicated fixture data:
 
@@ -85,8 +85,7 @@ import while frozen, reconcile against that exact source, and only then activate
 external Payments together with its Booking projection. Do not resume legacy
 payment writes after the snapshot and later activate a stale imported database.
 
-The original source tables are never dropped by these tools. Live activation,
-cross-database cutover acknowledgement, pending legacy outbox reconciliation and
-rollback/runbook rehearsal still need implementation and verification before
-the fresh-project restriction can be removed. The current default stack and guard
-are therefore unchanged by this increment.
+The original source tables are never dropped. The cutover procedure adds source
+markers, target verification, private browser checks, pending legacy financial
+event handling and guarded pre-release rollback. The original installation is
+not migrated until an operator explicitly commits that procedure.

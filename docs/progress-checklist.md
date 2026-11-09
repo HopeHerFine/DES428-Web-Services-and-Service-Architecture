@@ -29,6 +29,8 @@
   Windows pilot ผ่านแล้ว; เพิ่ม HTTP Pact ของ Payments หกกรณีแล้ว
   เพิ่มตัว export/import ประวัติพร้อมตรวจยอดและซ้อมข้อมูลจำลองแล้ว;
   ยังไม่ย้ายหรือสลับข้อมูลจริงของระบบเดิม
+  เพิ่มขั้นตอนหยุด/ตรวจยอด/สลับจริง/ย้อนก่อนเปิดรับรายการแล้ว;
+  ดู docs/payments-cutover.md และซ้อม check-payments-cutover.ps1 ก่อนใช้จริง
   ยังต้องปิด migration/observability/faults/Saga ก่อนยืนยันทั้ง seam
 - [ ] JWT/ownership และ traces ครบทั้งสอง seams
 - [ ] ข้อกำหนดสอง events ของทีมและ Saga พร้อม compensating actions

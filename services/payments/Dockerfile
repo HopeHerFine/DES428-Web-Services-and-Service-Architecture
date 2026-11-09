@@ -2,7 +2,7 @@ FROM python:3.12-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
 WORKDIR /service
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt && useradd --create-home service
+RUN pip install --no-cache-dir -r requirements.txt && useradd --create-home service && mkdir -p /migration/report && chown service:service /migration/report
 COPY --chown=service:service payment_service ./payment_service
 USER service
 EXPOSE 8000

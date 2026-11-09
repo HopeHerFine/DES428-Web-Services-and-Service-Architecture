@@ -43,6 +43,12 @@ services:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     volumes:
       - type: volume
+        source: cutover-marker
+        target: /migration/marker
+        read_only: true
+        volume:
+          nocopy: true
+      - type: volume
         source: stack-config
         target: /run/local-env
         read_only: true
@@ -66,6 +72,12 @@ services:
     environment:
       OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
     volumes:
+      - type: volume
+        source: cutover-marker
+        target: /migration/marker
+        read_only: true
+        volume:
+          nocopy: true
       - type: volume
         source: stack-config
         target: /run/local-env
@@ -93,3 +105,4 @@ services:
         condition: service_healthy
 volumes:
   payments-data:
+  cutover-marker:

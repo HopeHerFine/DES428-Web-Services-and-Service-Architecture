@@ -42,7 +42,12 @@
     ".env.example",
     "compose.payments.yml",
     "check-payments.ps1",
-    "compose.payments-history.yml"
+    "compose.payments-history.yml",
+    "compose.payments-cutover.yml",
+    "compose.payments-maintenance.yml",
+    "switch-payments.ps1",
+    "start-payments.ps1",
+    "check-payments-cutover.ps1"
   ],
   "required": [
     "Dockerfile",

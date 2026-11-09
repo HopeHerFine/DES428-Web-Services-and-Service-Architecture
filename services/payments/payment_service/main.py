@@ -11,7 +11,8 @@ from prometheus_client import Counter, Histogram, generate_latest, CONTENT_TYPE_
 from sqlalchemy import select, text
 from sqlalchemy.exc import SQLAlchemyError
 from .auth import authenticated, verifier as jwt_verifier
-from .db import Base, Entry, Intent, database
+from .db import Base, Entry, Intent, HistoryBatch, CutoverBinding, database
+from .target import verify_target
 from .domain import settle, wallet, public_entry
 from .telemetry import setup
 from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
@@ -34,6 +35,7 @@ def create_app(engine=None, sessions=None, verifier=None):
     @asynccontextmanager
     async def lifespan(app):
         Base.metadata.create_all(engine)
+        verify_target(sessions)
         yield
         engine.dispose()
 
@@ -76,7 +78,10 @@ def create_app(engine=None, sessions=None, verifier=None):
     def ready():
         with sessions() as session:
             session.execute(text("SELECT 1"))
-        return {"status": "ok"}
+            batch=session.get(HistoryBatch,'initial')
+            binding=session.get(CutoverBinding,'initial')
+            return {"status": "ok", "history_snapshot_sha256":batch.snapshot_hash if batch else None,
+                "history_cutover_run_id":binding.run_id if binding else None}
 
     @app.get("/metrics", include_in_schema=False)
     def metrics():

@@ -21,4 +21,10 @@ test("Booking payment projection deduplicates, rejects mismatches and never reve
   assert.equal(applyPaymentEvent({ ...paid, id: "late-paid" }), true);
   assert.equal(getDb().prepare("SELECT payment_status FROM orders WHERE id=?").get(order.id).payment_status, "refunded");
   assert.equal(getDb().prepare("SELECT COUNT(*) AS n FROM payment_event_receipts").get().n, 3);
+  getDb().prepare('INSERT INTO payments_legacy_orders(order_id,customer_id,provider_id,amount_cents,payment_status) VALUES(?,?,?,?,?)')
+    .run(order.id,1,1,order.total_cents,'paid');
+  const legacy={id:'old-financial-outbox',type:'payment.succeeded',payload:{order_id:order.id,provider_id:1,amount_cents:order.total_cents}};
+  assert.equal(applyPaymentEvent(legacy),false);
+  assert.equal(getDb().prepare('SELECT payment_status FROM orders WHERE id=?').get(order.id).payment_status,'refunded');
+  assert.throws(()=>applyPaymentEvent({...legacy,id:'wrong-old-amount',payload:{...legacy.payload,amount_cents:1}}),TypeError);
 });

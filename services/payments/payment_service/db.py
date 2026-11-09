@@ -72,6 +72,13 @@ class HistoryBatch(Base):
     report_json: Mapped[str] = mapped_column(Text)
 
 
+class CutoverBinding(Base):
+    __tablename__ = "cutover_binding"
+    id: Mapped[str] = mapped_column(String(32), primary_key=True)
+    run_id: Mapped[str] = mapped_column(String(36))
+    snapshot_sha256: Mapped[str] = mapped_column(String(64))
+
+
 def database(url):
     engine = create_engine(url, pool_pre_ping=True)
     return engine, sessionmaker(engine, expire_on_commit=False)

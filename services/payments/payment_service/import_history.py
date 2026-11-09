@@ -13,7 +13,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field
 from sqlalchemy import func, select, text
 from sqlalchemy.exc import IntegrityError
-from .db import Base, Entry, HistoryBatch, Intent, Outbox, Receipt, WalletOpening, database
+from .db import Base, Entry, HistoryBatch, Intent, Outbox, Receipt, WalletOpening, CutoverBinding, database
 from .domain import Snapshot, fingerprint
 
 class Strict(BaseModel):
@@ -132,11 +132,11 @@ def import_history(sessions, document):
         with sessions.begin() as session:
             if session.bind.dialect.name == "postgresql":
                 # Block API/consumer writes during the empty-target check and import.
-                session.execute(text("LOCK TABLE payment_intents, transactions, processed_events, outbox, wallet_openings, history_imports IN EXCLUSIVE MODE"))
+                session.execute(text("LOCK TABLE payment_intents, transactions, processed_events, outbox, wallet_openings, history_imports, cutover_binding IN EXCLUSIVE MODE"))
             old = session.get(HistoryBatch, "initial")
             if old is not None:
                 return replay(old)
-            for model in (Intent, Entry, Receipt, Outbox, WalletOpening):
+            for model in (Intent, Entry, Receipt, Outbox, WalletOpening, CutoverBinding):
                 if session.scalar(select(func.count()).select_from(model)):
                     raise ValueError("History import requires an unused Payments database")
             for order in history.orders:
