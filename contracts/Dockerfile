@@ -13,9 +13,11 @@ RUN npm ci --ignore-scripts --no-audit --no-fund
 COPY contracts/package.json contracts/package-lock.json ./contracts/
 RUN cd contracts && npm ci --no-audit --no-fund
 COPY services/notifications/requirements.txt ./services/notifications/requirements.txt
-RUN python -m pip install --no-cache-dir -r services/notifications/requirements.txt
+COPY services/payments/requirements.txt ./services/payments/requirements.txt
+RUN python -m pip install --no-cache-dir -r services/notifications/requirements.txt -r services/payments/requirements.txt
 COPY lib ./lib
 COPY services/notifications/app ./services/notifications/app
+COPY services/payments/payment_service ./services/payments/payment_service
 COPY contracts ./contracts
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
-CMD ["sh", "-c", "node contracts/consumer.mjs && node contracts/provider.mjs"]
+CMD ["sh", "-c", "node contracts/consumer.mjs && node contracts/provider.mjs && node contracts/payments-consumer.mjs && node contracts/payments-provider.mjs"]

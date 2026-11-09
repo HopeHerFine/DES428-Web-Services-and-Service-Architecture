@@ -1,0 +1,76 @@
+services:
+  cutover-node:
+    profiles: [cutover-tools]
+    build:
+      context: .
+      target: runtime
+    entrypoint: [/bin/sh, /run/local-env/launch.sh, node, /app/payments-cutover.mjs]
+    command: [status]
+    network_mode: none
+    environment:
+      PAYMENTS_MAINTENANCE: 'true'
+    volumes:
+      - monolith-data:/app/data
+      - cutover-source:/migration/source
+      - cutover-marker:/migration/marker
+      - type: volume
+        source: cutover-report
+        target: /migration/report
+        read_only: true
+        volume:
+          nocopy: true
+      - ./scripts/payments-cutover.mjs:/app/payments-cutover.mjs:ro
+      - ./scripts/export-payments-history.mjs:/app/export-payments-history.mjs:ro
+      - ./lib/modules/payments/cutover-state.js:/app/cutover-state.mjs:ro
+      - type: volume
+        source: stack-config
+        target: /run/local-env
+        read_only: true
+        volume:
+          subpath: legacy-export
+          nocopy: true
+  cutover-import:
+    profiles: [cutover-tools]
+    build: ./services/payments
+    entrypoint: [/bin/sh, /run/local-env/launch.sh, python, -m, payment_service.cutover]
+    command: [preflight]
+    volumes:
+      - type: volume
+        source: cutover-source
+        target: /migration/source
+        read_only: true
+        volume:
+          nocopy: true
+      - cutover-report:/migration/report
+      - type: volume
+        source: stack-config
+        target: /run/local-env
+        read_only: true
+        volume:
+          subpath: payments
+          nocopy: true
+    depends_on:
+      payments-db:
+        condition: service_healthy
+  cutover-probe-gateway:
+    profiles: [cutover-tools]
+    image: nginx:1.28-alpine
+    volumes:
+      - ./gateway/nginx.payments.conf:/etc/nginx/nginx.conf:ro
+  cutover-read-check:
+    profiles: [cutover-tools]
+    build: ./services/notifications
+    command: [python, -m, app.check_payments_cutover]
+    environment:
+      GATEWAY_CONNECT_HOST: cutover-probe-gateway
+    volumes:
+      - type: volume
+        source: cutover-source
+        target: /migration/source
+        read_only: true
+        volume:
+          nocopy: true
+volumes:
+  cutover-source:
+  cutover-report:
+  cutover-marker:

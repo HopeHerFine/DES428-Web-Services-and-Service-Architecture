@@ -3,7 +3,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node consumer.mjs && node provider.mjs"
+    "test": "node consumer.mjs && node provider.mjs && node payments-consumer.mjs && node payments-provider.mjs"
   },
   "devDependencies": {
     "@pact-foundation/pact": "17.1.4"

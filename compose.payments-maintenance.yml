@@ -1,0 +1,7 @@
+services:
+  edemand:
+    environment:
+      PAYMENTS_CUTOVER_PROBE: 'true'
+      NOTIFICATIONS_SERVICE_URL: http://cutover-probe-gateway/api/notifications
+  gateway:
+    profiles: [public-traffic]

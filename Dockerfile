@@ -40,7 +40,7 @@ RUN groupadd --system --gid 1001 edemand \
 WORKDIR /app
 COPY --from=build /app/.next/standalone ./
 COPY --from=build /app/.next/static ./.next/static
-RUN mkdir -p /app/data && chown -R edemand:edemand /app
+RUN mkdir -p /app/data /migration/source /migration/marker && chown -R edemand:edemand /app /migration/source /migration/marker
 USER edemand
 EXPOSE 3000
 HEALTHCHECK --interval=10s --timeout=3s --start-period=10s --retries=3 \

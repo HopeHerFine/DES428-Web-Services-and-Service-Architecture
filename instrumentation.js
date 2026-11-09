@@ -7,12 +7,19 @@ export async function register() {
     await startTelemetry();
     const { bootstrapDb } = await import("./lib/db/bootstrap.js");
     bootstrapDb();
+    const { verifyCutoverTarget } = await import("./lib/modules/payments/cutover-state.js");
+    const { getDb } = await import("./lib/db/index.js");
+    const { config } = await import("./lib/config.js");
+    if (config.externalPayments) await verifyCutoverTarget(getDb(),config.paymentsUrl);
     const { startRelay } = await import("./lib/modules/notifications/relay.js");
     startRelay();
-    const { config } = await import("./lib/config.js");
     if (config.externalNotifications) {
       const { startPublisher } = await import("./lib/messaging/publisher.js");
       startPublisher();
+    }
+    if (config.externalPayments) {
+      const { startPaymentConsumer } = await import("./lib/messaging/payment-consumer.js");
+      startPaymentConsumer();
     }
   }
 }

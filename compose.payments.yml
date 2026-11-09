@@ -1,0 +1,111 @@
+# Pilot only: use a fresh project. Legacy payment history is not imported yet.
+services:
+  edemand:
+    environment:
+      EXTERNAL_PAYMENTS: 'true'
+      PAYMENTS_SERVICE_URL: http://payments:8000/api/payments
+    depends_on:
+      payments:
+        condition: service_healthy
+      payments-worker:
+        condition: service_healthy
+  payments-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: payments
+      POSTGRES_USER: payments
+    entrypoint: [/bin/sh, /run/local-env/launch.sh, docker-entrypoint.sh]
+    command: [postgres]
+    volumes:
+      - payments-data:/var/lib/postgresql/data
+      - type: volume
+        source: stack-config
+        target: /run/local-env
+        read_only: true
+        volume:
+          subpath: payments-db
+          nocopy: true
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+    healthcheck:
+      test: [CMD-SHELL, 'pg_isready -U payments -d payments']
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  payments:
+    build: ./services/payments
+    entrypoint: [/bin/sh, /run/local-env/launch.sh]
+    command: [uvicorn, 'payment_service.main:create_app', --factory, --host, 0.0.0.0, --port, '8000']
+    environment:
+      JWT_ISSUER: http://localhost:8080/auth/realms/homeservice
+      JWT_JWKS_URL: http://keycloak:8080/auth/realms/homeservice/protocol/openid-connect/certs
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+    volumes:
+      - type: volume
+        source: cutover-marker
+        target: /migration/marker
+        read_only: true
+        volume:
+          nocopy: true
+      - type: volume
+        source: stack-config
+        target: /run/local-env
+        read_only: true
+        volume:
+          subpath: payments
+          nocopy: true
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+      payments-db:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "from urllib.request import urlopen; urlopen('http://127.0.0.1:8000/ready', timeout=3)"]
+      interval: 5s
+      timeout: 5s
+      retries: 30
+  payments-worker:
+    build: ./services/payments
+    entrypoint: [/bin/sh, /run/local-env/launch.sh]
+    command: [python, -m, payment_service.worker]
+    environment:
+      OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger:4318
+    volumes:
+      - type: volume
+        source: cutover-marker
+        target: /migration/marker
+        read_only: true
+        volume:
+          nocopy: true
+      - type: volume
+        source: stack-config
+        target: /run/local-env
+        read_only: true
+        volume:
+          subpath: payments-worker
+          nocopy: true
+    depends_on:
+      bootstrap:
+        condition: service_completed_successfully
+      payments:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    healthcheck:
+      test: [CMD, python, -c, "import os,time; assert time.time()-os.stat('/tmp/payments-worker-heartbeat').st_mtime < 30"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+  prometheus:
+    volumes:
+      - ./observability/prometheus.payments.yml:/etc/prometheus/prometheus.yml:ro
+  gateway:
+    volumes:
+      - ./gateway/nginx.payments.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      payments:
+        condition: service_healthy
+volumes:
+  payments-data:
+  cutover-marker:

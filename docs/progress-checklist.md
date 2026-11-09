@@ -25,14 +25,22 @@
 ## ข้อกำหนดทีมที่ยังต้องปิด
 
 - [ ] Service ที่ 2 ด้วย FastAPI และฐานข้อมูล PostgreSQL/MySQL ของตัวเอง
+  เริ่ม Payments & Wallet แบบ opt-in pilot แล้ว ดู services/payments/README.md;
+  Windows pilot ผ่านแล้ว; เพิ่ม HTTP Pact ของ Payments หกกรณีแล้ว
+  เพิ่มตัว export/import ประวัติพร้อมตรวจยอดและซ้อมข้อมูลจำลองแล้ว;
+  ยังไม่ย้ายหรือสลับข้อมูลจริงของระบบเดิม
+  เพิ่มขั้นตอนหยุด/ตรวจยอด/สลับจริง/ย้อนก่อนเปิดรับรายการแล้ว;
+  ดู docs/payments-cutover.md และซ้อม check-payments-cutover.ps1 ก่อนใช้จริง
+  ยังต้องปิด migration/observability/faults/Saga ก่อนยืนยันทั้ง seam
 - [ ] JWT/ownership และ traces ครบทั้งสอง seams
 - [ ] ข้อกำหนดสอง events ของทีมและ Saga พร้อม compensating actions
 - [ ] เหตุผลเลือก orchestration/choreography จากหลักฐานของทีมเอง
 - [ ] หาและแก้ BOLA ใน inherited code พร้อมสาธิตการโจมตีก่อน/หลัง
 - [ ] หาและแก้ unsafe race ที่ README ระบุ พร้อมทดสอบคำขอพร้อมกัน
 - [ ] Dashboard rate/error/response time และ Pact ครบทั้งสอง boundaries
-- [ ] ยืนยัน root canonical clone ที่เปิดด้วย docker compose up โดยไม่ใช้ host settings
-  จาก CI ของ commit ส่งจริงและซ้อมบนเครื่องเจ้าของงาน (โค้ด initialization เตรียมแล้ว)
+- [x] ยืนยัน root canonical clone ที่เปิดด้วย docker compose up โดยไม่ใช้ host settings
+  PR #5 ผ่าน CI และเจ้าของงานซ้อม check-clean-start.ps1 ผ่านแล้ว
+  (ต้องตรวจซ้ำสำหรับ commit ส่งจริงเมื่อเพิ่มบริการครบ)
   ดู [วิธีเปิดและขอบเขตการทดสอบ](canonical-boot.md)
 - [ ] วัด RAM และตรวจ offline ซ้ำเมื่อระบบรวมมี Service ที่ 2/Saga
 

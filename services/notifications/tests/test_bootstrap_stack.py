@@ -46,3 +46,17 @@ def test_shell_and_connection_string_values_are_encoded_safely(tmp_path):
     assert ' $value' not in db
     with pytest.raises(ValueError,match='line breaks'):
         prepare(tmp_path/'invalid',{'JWT_SECRET':'one\ntwo'})
+
+
+def test_new_service_secret_is_persisted_without_rotating_existing_secrets(tmp_path):
+    prepare(tmp_path,{})
+    state=tmp_path/'settings.json'
+    original=json.loads(state.read_text())
+    old={key:value for key,value in original.items() if key!='PAYMENTS_DB_PASSWORD'}
+    state.chmod(0o600)
+    state.write_text(json.dumps(old))
+    prepare(tmp_path,{})
+    upgraded=json.loads(state.read_text())
+    assert all(upgraded[key]==value for key,value in old.items())
+    prepare(tmp_path,{})
+    assert json.loads(state.read_text())==upgraded
