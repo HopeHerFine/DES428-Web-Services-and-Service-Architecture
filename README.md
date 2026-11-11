@@ -40,7 +40,7 @@ the shell scripts. Use the seeded accounts above if you also inspect the site.
 | Happy path | `sh scripts/beat1-happy-path.sh` | Notifications browser probe and Payments probe report `PASS`. The payment flow shows `paid`, `cancellation_requested`, then `refunded` with one charge and one refund. |
 | Failure recovery | `sh scripts/beat2-failure-recovery.sh` | `PASS` for lost reply, slow reply and temporary unavailability. Retried writes return the original result. PostgreSQL records one write receipt for each scenario, including eight concurrent requests for one notification. |
 | Auth rejection | `sh scripts/beat3-auth-rejection.sh` | `PASS` with `401` for forged, expired and wrong-audience tokens. A valid Keycloak token returns `200`. |
-| Find the trace | `sh scripts/beat4-find-the-trace.sh` | `PASS` with a `trace_id` and `cross_service_parent_child: true`. Paste the ID into **Lookup by Trace ID** in Jaeger at http://localhost:16686 to see Monolith and Notifications in one trace. |
+| Find the trace | `sh scripts/beat4-find-the-trace.sh` | Both Notifications and Payments probes report `PASS`, each with a `trace_id` and `cross_service_parent_child: true`. Paste each ID into **Lookup by Trace ID** in Jaeger at http://localhost:16686 to see Monolith connected to Notifications and Payments in separate traces. |
 
 These scripts create demo records and Beat 2 briefly changes the Notifications
 fault flag. Run them sequentially on the disposable demo project. The first
