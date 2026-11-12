@@ -19,6 +19,10 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.instrumentation.sqlalchemy import SQLAlchemyInstrumentor
 
 logger = logging.getLogger("payments")
+logger.setLevel(logging.INFO)
+if not logger.handlers:
+    logger.addHandler(logging.StreamHandler())
+logger.propagate = False
 REQUESTS = Counter("payments_http_requests_total", "Payments requests", ["method", "route", "status"])
 DURATION = Histogram("payments_http_duration_seconds", "Payments latency", ["method", "route"])
 
