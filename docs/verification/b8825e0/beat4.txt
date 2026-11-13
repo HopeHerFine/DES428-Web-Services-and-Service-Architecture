@@ -1,0 +1,62 @@
+2026-11-13 16:34:21 +07
+ Image homeservice-rehearsal-b8825e0-notifications-worker Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.84kB done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 470B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 2.5s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 77B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 1.15kB done
+#5 DONE 0.0s
+
+#6 [1/6] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#6 resolve docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b 0.0s done
+#6 DONE 0.0s
+
+#7 [5/6] RUN useradd --create-home service && mkdir /bootstrap && chown service:service /bootstrap
+#7 CACHED
+
+#8 [2/6] WORKDIR /service
+#8 CACHED
+
+#9 [4/6] RUN pip install --no-cache-dir -r requirements.txt
+#9 CACHED
+
+#10 [3/6] COPY requirements.txt .
+#10 CACHED
+
+#11 [6/6] COPY --chown=service:service app ./app
+#11 CACHED
+
+#12 exporting to image
+#12 exporting layers done
+#12 exporting manifest sha256:856c7d81a1a62e2aef5821db442f8e60fcca17a23886ee2a892eb1b79c1be95c done
+#12 exporting config sha256:4279114381cf778c5edddf6d1af540bafbc2938027c1606f3b98c1727f8696ed done
+#12 exporting attestation manifest sha256:f3f3e65007809ef37e22958b8125de2428bac0330140c439742a5cb54180fffa done
+#12 exporting manifest list sha256:38135cf9fffe24bedd3797722f9fb90e42b087bba43cd5fbccd8efd17fd27cd5 done
+#12 naming to docker.io/library/homeservice-rehearsal-b8825e0-notifications-worker:latest done
+#12 unpacking to docker.io/library/homeservice-rehearsal-b8825e0-notifications-worker:latest done
+#12 DONE 0.0s
+
+#13 resolving provenance for metadata file
+#13 DONE 0.0s
+ Image homeservice-rehearsal-b8825e0-notifications-worker Built 
+Notifications trace:
+ Container homeservice-rehearsal-b8825e0-notifications-worker-run-78f492a1bf3c Creating 
+ Container homeservice-rehearsal-b8825e0-notifications-worker-run-78f492a1bf3c Created 
+{"result": "PASS", "probe": "observability", "scrape_jobs": ["monolith", "notifications", "payments", "worker"], "trace_id": "c29b8e7e2f1844b7a0d120b9d64f130a", "trace_services": ["monolith", "notifications"], "cross_service_parent_child": true, "dashboard_uid": "notifications"}
+Payments trace:
+ Container homeservice-rehearsal-b8825e0-notifications-worker-run-20a89a45909c Creating 
+ Container homeservice-rehearsal-b8825e0-notifications-worker-run-20a89a45909c Created 
+{"result": "PASS", "probe": "payments-observability", "scrape_jobs": ["monolith", "notifications", "payments", "worker"], "trace_id": "1540453c413a406d9f6926ab7c2ccbb8", "trace_services": ["monolith", "payments"], "cross_service_parent_child": true, "dashboard_uid": "payments"}
+Open http://localhost:16686 and paste trace_id into Lookup by Trace ID.

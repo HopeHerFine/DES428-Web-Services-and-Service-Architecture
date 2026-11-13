@@ -1,0 +1,241 @@
+2026-11-13 16:46:39 +07
+ Network homeservice-contracts-b8825e0_default Creating 
+ Network homeservice-contracts-b8825e0_default Creating 
+ Network homeservice-contracts-b8825e0_default Created 
+ Network homeservice-contracts-b8825e0_default Created 
+ Container homeservice-contracts-b8825e0-payment-contract-db-1 Creating 
+ Container homeservice-contracts-b8825e0-contract-db-1 Creating 
+ Container homeservice-contracts-b8825e0-contract-db-1 Created 
+ Container homeservice-contracts-b8825e0-payment-contract-db-1 Created 
+ Container homeservice-contracts-b8825e0-contract-db-1 Starting 
+ Container homeservice-contracts-b8825e0-payment-contract-db-1 Starting 
+ Container homeservice-contracts-b8825e0-contract-db-1 Started 
+ Container homeservice-contracts-b8825e0-payment-contract-db-1 Started 
+ Image homeservice-contracts-b8825e0-contract-tests Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 652B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 1.95kB 0.0s done
+#2 DONE 0.0s
+
+#3 resolve image config for docker-image://docker.io/docker/dockerfile:1
+#3 DONE 2.6s
+
+#4 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+#4 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.0s done
+#4 CACHED
+
+#5 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
+#5 DONE 1.3s
+
+#6 [internal] load metadata for docker.io/library/node:22-bookworm-slim
+#6 DONE 1.6s
+
+#7 [stage-1  1/17] FROM docker.io/library/python:3.12-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df
+#7 resolve docker.io/library/python:3.12-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df 0.0s done
+#7 DONE 0.0s
+
+#8 [node 1/1] FROM docker.io/library/node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee
+#8 resolve docker.io/library/node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee 0.0s done
+#8 DONE 0.0s
+
+#9 [internal] load build context
+#9 transferring context: 234.87kB 0.1s done
+#9 DONE 0.1s
+
+#10 [stage-1  4/17] COPY --from=node /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
+#10 CACHED
+
+#11 [stage-1  5/17] RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+#11 CACHED
+
+#12 [stage-1  2/17] RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 ca-certificates     && rm -rf /var/lib/apt/lists/*
+#12 CACHED
+
+#13 [stage-1  8/17] RUN npm ci --ignore-scripts --no-audit --no-fund
+#13 CACHED
+
+#14 [stage-1 15/17] COPY services/notifications/app ./services/notifications/app
+#14 CACHED
+
+#15 [stage-1  6/17] WORKDIR /workspace
+#15 CACHED
+
+#16 [stage-1 13/17] RUN python -m pip install --no-cache-dir -r services/notifications/requirements.txt -r services/payments/requirements.txt
+#16 CACHED
+
+#17 [stage-1 16/17] COPY services/payments/payment_service ./services/payments/payment_service
+#17 CACHED
+
+#18 [stage-1  3/17] COPY --from=node /usr/local/bin/node /usr/local/bin/node
+#18 CACHED
+
+#19 [stage-1  9/17] COPY contracts/package.json contracts/package-lock.json ./contracts/
+#19 CACHED
+
+#20 [stage-1  7/17] COPY package.json package-lock.json ./
+#20 CACHED
+
+#21 [stage-1 14/17] COPY lib ./lib
+#21 CACHED
+
+#22 [stage-1 10/17] RUN cd contracts && npm ci --no-audit --no-fund
+#22 CACHED
+
+#23 [stage-1 11/17] COPY services/notifications/requirements.txt ./services/notifications/requirements.txt
+#23 CACHED
+
+#24 [stage-1 12/17] COPY services/payments/requirements.txt ./services/payments/requirements.txt
+#24 CACHED
+
+#25 [stage-1 17/17] COPY contracts ./contracts
+#25 CACHED
+
+#26 exporting to image
+#26 exporting layers done
+#26 exporting manifest sha256:8a0bb6b0229d0e9684d14671b6166039666804772f283f89c6fae5983996a8e6 0.0s done
+#26 exporting config sha256:0ecaefb248b52f43b4a3ca5e6ee38684b549540405665ecf36b4eabd082a6e49 done
+#26 exporting attestation manifest sha256:f0d4d4aafa986aacc5e72406c4b875ebae754422130e2dc410c4c212805c0c7f done
+#26 exporting manifest list sha256:9c37bf933fdc94b88a64f3f068eda59c5fdde952c29f3a2731b60520688b0ff7 done
+#26 naming to docker.io/library/homeservice-contracts-b8825e0-contract-tests:latest done
+#26 unpacking to docker.io/library/homeservice-contracts-b8825e0-contract-tests:latest done
+#26 DONE 0.1s
+
+#27 resolving provenance for metadata file
+#27 DONE 0.0s
+ Image homeservice-contracts-b8825e0-contract-tests Built 
+ Container homeservice-contracts-b8825e0-payment-contract-db-1 Waiting 
+ Container homeservice-contracts-b8825e0-contract-db-1 Waiting 
+ Container homeservice-contracts-b8825e0-payment-contract-db-1 Healthy 
+ Container homeservice-contracts-b8825e0-contract-db-1 Healthy 
+ Container homeservice-contracts-b8825e0-contract-tests-run-7f0daae5026d Creating 
+ Container homeservice-contracts-b8825e0-contract-tests-run-7f0daae5026d Created 
+PASS: five consumer interactions generated using the real Notifications client.
+{"service": "notifications", "correlation_id": "3c52ab82-ba9c-486e-9444-4a1ddf7b44f6", "trace_id": null, "method": "GET", "path": "/ready", "status": 200, "duration_ms": 2.71}
+{"service": "notifications", "correlation_id": "3ce1f595-a08b-45fc-9bd9-d297ae355d98", "trace_id": null, "method": "POST", "path": "/_pact/state", "status": 200, "duration_ms": 17.36}
+(node:28) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"service": "notifications", "correlation_id": "49785ee5-c57e-47ac-a815-ebd785f13818", "trace_id": null, "method": "GET", "path": "/api/notifications", "status": 200, "duration_ms": 10.34}
+{"service": "notifications", "correlation_id": "a89e1e2e-1bd7-48ae-9c22-5e7e0a06a1d7", "trace_id": null, "method": "POST", "path": "/_pact/state", "status": 200, "duration_ms": 2.34}
+{"service": "notifications", "correlation_id": "26ed9455-11dd-4096-9351-ab71f2ad1f08", "trace_id": null, "method": "POST", "path": "/api/notifications/41/read", "status": 200, "duration_ms": 16.36}
+{"service": "notifications", "correlation_id": "f10c569a-056b-4c74-b124-e3b2fc927f2c", "trace_id": null, "method": "POST", "path": "/_pact/state", "status": 200, "duration_ms": 3.06}
+{"service": "notifications", "correlation_id": "883d29d2-82d1-49dd-a2ad-ed4c8192e568", "trace_id": null, "method": "POST", "path": "/api/notifications/41/read", "status": 403, "duration_ms": 4.31}
+{"service": "notifications", "correlation_id": "b3401ec6-c6e6-4e9f-8875-976d2bfcc5ad", "trace_id": null, "method": "POST", "path": "/_pact/state", "status": 200, "duration_ms": 2.65}
+{"service": "notifications", "correlation_id": "a6cfaaab-0995-461d-a831-ccce8c72898a", "trace_id": null, "method": "GET", "path": "/api/notifications", "status": 200, "duration_ms": 5.78}
+{"service": "notifications", "correlation_id": "75e1ef4e-1140-4cdd-a7bd-19914285430d", "trace_id": null, "method": "POST", "path": "/_pact/state", "status": 200, "duration_ms": 2.19}
+{"service": "notifications", "correlation_id": "861f1640-3abc-4ede-ac16-2cc6d1a96a0d", "trace_id": null, "method": "GET", "path": "/api/notifications", "status": 401, "duration_ms": 0.93}
+
+Verifying a pact between [1mHomeserviceWeb[0m and [1mNotifications[0m
+
+  list own inbox (1ms loading, 442ms verification)
+     Given customer has unread notification
+    returns a response which
+      has status code [1m200[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+  mark own notification read with idempotency key (1ms loading, 42ms verification)
+     Given customer has unread notification
+    returns a response which
+      has status code [1m200[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+  reject another customer marking notification read (1ms loading, 25ms verification)
+     Given customer has unread notification
+    returns a response which
+      has status code [1m403[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+  list empty inbox (1ms loading, 32ms verification)
+     Given empty inbox
+    returns a response which
+      has status code [1m200[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+  reject invalid credentials (1ms loading, 95ms verification)
+     Given empty inbox
+    returns a response which
+      has status code [1m401[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+
+PASS: real FastAPI provider verified all five consumer interactions.
+PASS: six Payments interactions generated using the real web client.
+{"service": "payments", "correlation_id": "08368b6a-1684-4cf4-bd31-45126e5f58a2", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 15.4}
+(node:70) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+{"service": "payments", "correlation_id": "41ff5f2e-2ac5-44b1-a270-89c2c9993951", "method": "GET", "route": "/api/payments/intents/{order_id}", "status": 200, "duration_ms": 2.79}
+{"service": "payments", "correlation_id": "0b77e572-a83e-41e3-a997-4787d3b7c5a0", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 3.74}
+{"service": "payments", "correlation_id": "0e0681e4-4498-4d0d-8832-c1d78342a903", "method": "POST", "route": "/api/payments/simulate", "status": 200, "duration_ms": 9.49}
+{"service": "payments", "correlation_id": "e15551c5-6f2f-4102-9d14-96e127691f41", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 4.54}
+{"service": "payments", "correlation_id": "794c2cfa-4a05-44a6-bbcf-a2dd3a29e609", "method": "GET", "route": "/api/payments/intents/{order_id}", "status": 403, "duration_ms": 1.93}
+{"service": "payments", "correlation_id": "7f91f71f-6999-492d-a6dd-284cbce9d107", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 3.6}
+{"service": "payments", "correlation_id": "a64ad6dc-6a09-45a8-abcd-78fe68eaed3f", "method": "GET", "route": "/api/payments/intents/{order_id}", "status": 401, "duration_ms": 0.33}
+{"service": "payments", "correlation_id": "3d1e2161-e085-4a48-ba8c-bf69c289a1a2", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 13.31}
+{"service": "payments", "correlation_id": "94989b78-6156-4bcc-9698-8f6567c7a17f", "method": "GET", "route": "/api/payments/wallet", "status": 200, "duration_ms": 4.57}
+{"service": "payments", "correlation_id": "6dbf3546-99d9-4c4d-9cfa-2c686d07798f", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 5.93}
+{"service": "payments", "correlation_id": "74461a5b-d97e-4097-96e3-28618df3a1f2", "method": "GET", "route": "/api/payments/transactions", "status": 200, "duration_ms": 3.14}
+
+Verifying a pact between [1mHomeserviceWeb[0m and [1mPayments[0m
+
+  read own payment intent (1ms loading, 61ms verification)
+     Given payable booking
+    returns a response which
+      has status code [1m200[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+  settle own payment using an idempotency key (1ms loading, 27ms verification)
+     Given payable booking
+    returns a response which
+      has status code [1m200[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+  reject another customer reading payment (1ms loading, 25ms verification)
+     Given payable booking
+    returns a response which
+      has status code [1m403[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+  reject invalid payment credentials (1ms loading, 18ms verification)
+     Given payable booking
+    returns a response which
+      has status code [1m401[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+  read provider wallet with remote ledger (1ms loading, 36ms verification)
+     Given settled completed booking
+    returns a response which
+      has status code [1m200[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+  read customer payment transactions (1ms loading, 33ms verification)
+     Given settled booking
+    returns a response which
+      has status code [1m200[0m ([32mOK[0m)
+      includes headers
+        "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+      has a matching body ([32mOK[0m)
+
+
+PASS: real Payments FastAPI provider verified all six consumer interactions.

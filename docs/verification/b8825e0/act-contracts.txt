@@ -1,0 +1,279 @@
+2026-11-13 16:49:05 +07
+time="2026-11-13T16:49:05+07:00" level=info msg="Using docker host 'unix:///Users/pupearis/.docker/run/docker.sock', and daemon socket 'unix:///Users/pupearis/.docker/run/docker.sock'"
+[Notifications checks/contracts] ⭐ Run Set up job
+[Notifications checks/contracts] 🚀  Start image=ghcr.io/catthehacker/ubuntu:act-24.04
+[Notifications checks/contracts]   🐳  docker pull image=ghcr.io/catthehacker/ubuntu:act-24.04 platform=linux/amd64 username= forcePull=false
+[Notifications checks/contracts] image found but platform does not match: / (image) != linux/amd64 (platform)
+[Notifications checks/contracts]   🐳  docker create image=ghcr.io/catthehacker/ubuntu:act-24.04 platform=linux/amd64 entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[Notifications checks/contracts]   🐳  docker run image=ghcr.io/catthehacker/ubuntu:act-24.04 platform=linux/amd64 entrypoint=["tail" "-f" "/dev/null"] cmd=[] network="host"
+[Notifications checks/contracts]   🐳  docker exec cmd=[node --no-warnings -e console.log(process.execPath)] user= workdir=
+[Notifications checks/contracts]   ✅  Success - Set up job
+[Notifications checks/contracts]   ☁  git clone 'https://github.com/actions/upload-artifact' # ref=v7.0.2
+[Notifications checks/contracts] ⭐ Run Main actions/checkout@v7.0.1
+[Notifications checks/contracts]   ✅  Success - Main actions/checkout@v7.0.1 [1.556833ms]
+[Notifications checks/contracts] ⭐ Run Main Run Pact with the documented Compose command
+[Notifications checks/contracts]   🐳  docker exec cmd=[bash -e /var/run/act/workflow/1] user= workdir=
+[Notifications checks/contracts]   |  Network homeservice-act-b8825e0_default Creating 
+[Notifications checks/contracts]   |  Network homeservice-act-b8825e0_default Creating 
+[Notifications checks/contracts]   |  Network homeservice-act-b8825e0_default Created 
+[Notifications checks/contracts]   |  Network homeservice-act-b8825e0_default Created 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-payment-contract-db-1 Creating 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-db-1 Creating 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-payment-contract-db-1 Created 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-db-1 Created 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-payment-contract-db-1 Starting 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-db-1 Starting 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-payment-contract-db-1 Started 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-db-1 Started 
+[Notifications checks/contracts]   |  Image homeservice-act-b8825e0-contract-tests Building 
+[Notifications checks/contracts]   | #1 [internal] load local bake definitions
+[Notifications checks/contracts]   | #1 reading from stdin 640B done
+[Notifications checks/contracts]   | #1 DONE 0.0s
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #2 [internal] load build definition from Dockerfile
+[Notifications checks/contracts]   | #2 transferring dockerfile: 1.95kB 0.0s done
+[Notifications checks/contracts]   | #2 DONE 0.1s
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #3 resolve image config for docker-image://docker.io/docker/dockerfile:1
+[Notifications checks/contracts]   | #3 DONE 2.5s
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #4 docker-image://docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e
+[Notifications checks/contracts]   | #4 resolve docker.io/docker/dockerfile:1@sha256:4edf897a3ffa55b89f906fc8cc78afdb3f1834cc9c7083565e611a8a7d5fe99e 0.0s done
+[Notifications checks/contracts]   | #4 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #5 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
+[Notifications checks/contracts]   | #5 ...
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #6 [internal] load metadata for docker.io/library/node:22-bookworm-slim
+[Notifications checks/contracts]   | #6 DONE 0.9s
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #5 [internal] load metadata for docker.io/library/python:3.12-slim-bookworm
+[Notifications checks/contracts]   | #5 DONE 0.9s
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #7 [node 1/1] FROM docker.io/library/node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee
+[Notifications checks/contracts]   | #7 resolve docker.io/library/node:22-bookworm-slim@sha256:e9f565d32859f0cbfb52125eafe8be39390f24dac302dc3cdf566e8ba3ab21ee 0.0s done
+[Notifications checks/contracts]   | #7 DONE 0.0s
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #8 [stage-1  1/17] FROM docker.io/library/python:3.12-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df
+[Notifications checks/contracts]   | #8 resolve docker.io/library/python:3.12-slim-bookworm@sha256:935c3c5b12357a7e10caa9c1e6ca5692344d97cf229832ef584be2cec9fc03df 0.0s done
+[Notifications checks/contracts]   | #8 DONE 0.0s
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #9 [internal] load build context
+[Notifications checks/contracts]   | #9 transferring context: 481.78kB 0.1s done
+[Notifications checks/contracts]   | #9 DONE 0.1s
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #10 [stage-1  9/17] COPY contracts/package.json contracts/package-lock.json ./contracts/
+[Notifications checks/contracts]   | #10 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #11 [stage-1  8/17] RUN npm ci --ignore-scripts --no-audit --no-fund
+[Notifications checks/contracts]   | #11 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #12 [stage-1  3/17] COPY --from=node /usr/local/bin/node /usr/local/bin/node
+[Notifications checks/contracts]   | #12 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #13 [stage-1  2/17] RUN apt-get update && apt-get install -y --no-install-recommends libstdc++6 ca-certificates     && rm -rf /var/lib/apt/lists/*
+[Notifications checks/contracts]   | #13 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #14 [stage-1  4/17] COPY --from=node /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
+[Notifications checks/contracts]   | #14 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #15 [stage-1 11/17] COPY services/notifications/requirements.txt ./services/notifications/requirements.txt
+[Notifications checks/contracts]   | #15 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #16 [stage-1  6/17] WORKDIR /workspace
+[Notifications checks/contracts]   | #16 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #17 [stage-1 13/17] RUN python -m pip install --no-cache-dir -r services/notifications/requirements.txt -r services/payments/requirements.txt
+[Notifications checks/contracts]   | #17 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #18 [stage-1 14/17] COPY lib ./lib
+[Notifications checks/contracts]   | #18 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #19 [stage-1 15/17] COPY services/notifications/app ./services/notifications/app
+[Notifications checks/contracts]   | #19 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #20 [stage-1 16/17] COPY services/payments/payment_service ./services/payments/payment_service
+[Notifications checks/contracts]   | #20 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #21 [stage-1 12/17] COPY services/payments/requirements.txt ./services/payments/requirements.txt
+[Notifications checks/contracts]   | #21 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #22 [stage-1  7/17] COPY package.json package-lock.json ./
+[Notifications checks/contracts]   | #22 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #23 [stage-1 10/17] RUN cd contracts && npm ci --no-audit --no-fund
+[Notifications checks/contracts]   | #23 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #24 [stage-1  5/17] RUN ln -s ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
+[Notifications checks/contracts]   | #24 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #25 [stage-1 17/17] COPY contracts ./contracts
+[Notifications checks/contracts]   | #25 CACHED
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #26 exporting to image
+[Notifications checks/contracts]   | #26 exporting layers done
+[Notifications checks/contracts]   | #26 exporting manifest sha256:a52c5348baa6171257831b7443a2fc500ef1f90471f490b0ba31039cc8ca15a7 0.0s done
+[Notifications checks/contracts]   | #26 exporting config sha256:fd62fe9202ef34734e177d0236ce3a8d66b04c4131f245990d32b241960da18f done
+[Notifications checks/contracts]   | #26 exporting attestation manifest sha256:370bf5da1db36c9390971959357a5bc0ccb4754e27c9b3f2412f0b11d192a8f2 done
+[Notifications checks/contracts]   | #26 exporting manifest list sha256:b555428d980646d36c81dc8b68f0e856f183faf3201f5e4f5ea58d592e611a15 done
+[Notifications checks/contracts]   | #26 naming to docker.io/library/homeservice-act-b8825e0-contract-tests:latest done
+[Notifications checks/contracts]   | #26 unpacking to docker.io/library/homeservice-act-b8825e0-contract-tests:latest done
+[Notifications checks/contracts]   | #26 DONE 0.1s
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | #27 resolving provenance for metadata file
+[Notifications checks/contracts]   | #27 DONE 0.0s
+[Notifications checks/contracts]   |  Image homeservice-act-b8825e0-contract-tests Built 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-payment-contract-db-1 Waiting 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-db-1 Waiting 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-payment-contract-db-1 Healthy 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-db-1 Healthy 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-tests-run-5c819fc35c39 Creating 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-tests-run-5c819fc35c39 Created 
+[Notifications checks/contracts]   | PASS: five consumer interactions generated using the real Notifications client.
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "d6a45ab2-c87e-40a3-b8b7-6471d5cdfd9e", "trace_id": null, "method": "GET", "path": "/ready", "status": 200, "duration_ms": 4.26}
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "1a4424ba-e48c-4f58-bb70-847ef6e4e10d", "trace_id": null, "method": "POST", "path": "/_pact/state", "status": 200, "duration_ms": 18.74}
+[Notifications checks/contracts]   | (node:28) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+[Notifications checks/contracts]   | (Use `node --trace-deprecation ...` to show where the warning was created)
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "0d9c492a-2e64-4731-a74a-a24014608485", "trace_id": null, "method": "GET", "path": "/api/notifications", "status": 200, "duration_ms": 5.66}
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "9506e5ca-1741-4ab6-86d4-21a7f4c6836a", "trace_id": null, "method": "POST", "path": "/_pact/state", "status": 200, "duration_ms": 2.24}
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "577b76a6-aa34-4bfe-8f6e-45894fd5bd9a", "trace_id": null, "method": "POST", "path": "/api/notifications/41/read", "status": 200, "duration_ms": 17.32}
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "4aa266e2-cf67-4bc2-b995-fd0aaaac4aa8", "trace_id": null, "method": "POST", "path": "/_pact/state", "status": 200, "duration_ms": 5.02}
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "eb8c6ef1-f745-4a47-90e6-661d6f80accc", "trace_id": null, "method": "POST", "path": "/api/notifications/41/read", "status": 403, "duration_ms": 4.11}
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "8c444e36-5da1-403c-acf3-4f07f0cce356", "trace_id": null, "method": "POST", "path": "/_pact/state", "status": 200, "duration_ms": 5.33}
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "6390aa25-f1dd-4de3-8678-005b0eca2734", "trace_id": null, "method": "GET", "path": "/api/notifications", "status": 200, "duration_ms": 2.09}
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "850a808d-0c55-44f9-ad07-7e2138958eee", "trace_id": null, "method": "POST", "path": "/_pact/state", "status": 200, "duration_ms": 2.34}
+[Notifications checks/contracts]   | {"service": "notifications", "correlation_id": "a54e2afb-12af-4916-9bfe-a6e4916cdacf", "trace_id": null, "method": "GET", "path": "/api/notifications", "status": 401, "duration_ms": 0.74}
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | Verifying a pact between [1mHomeserviceWeb[0m and [1mNotifications[0m
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   list own inbox (1ms loading, 240ms verification)
+[Notifications checks/contracts]   |      Given customer has unread notification
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m200[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   mark own notification read with idempotency key (1ms loading, 42ms verification)
+[Notifications checks/contracts]   |      Given customer has unread notification
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m200[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   reject another customer marking notification read (1ms loading, 58ms verification)
+[Notifications checks/contracts]   |      Given customer has unread notification
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m403[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   list empty inbox (1ms loading, 55ms verification)
+[Notifications checks/contracts]   |      Given empty inbox
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m200[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   reject invalid credentials (1ms loading, 21ms verification)
+[Notifications checks/contracts]   |      Given empty inbox
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m401[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | PASS: real FastAPI provider verified all five consumer interactions.
+[Notifications checks/contracts]   | PASS: six Payments interactions generated using the real web client.
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "2d5be99b-61fa-4ef4-8c43-84107f90f82b", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 10.42}
+[Notifications checks/contracts]   | (node:70) [DEP0060] DeprecationWarning: The `util._extend` API is deprecated. Please use Object.assign() instead.
+[Notifications checks/contracts]   | (Use `node --trace-deprecation ...` to show where the warning was created)
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "f9e2fe49-16d2-4d8f-b35a-3d06e7569578", "method": "GET", "route": "/api/payments/intents/{order_id}", "status": 200, "duration_ms": 2.18}
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "cc8041d6-3225-45cb-8061-26b24701e64c", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 2.78}
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "391cfd20-6e6d-4c60-bcb3-2602753cce0f", "method": "POST", "route": "/api/payments/simulate", "status": 200, "duration_ms": 11.11}
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "e278e0e8-01ff-43e5-8002-02dae637bede", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 3.13}
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "ed062e7d-6ca2-41d0-ae1f-6930f72f5b2c", "method": "GET", "route": "/api/payments/intents/{order_id}", "status": 403, "duration_ms": 2.04}
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "36c93b24-8f62-4b5c-b30a-e5584444dbfd", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 3.02}
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "56cc3fbc-49d4-4193-adfd-ed10225da57f", "method": "GET", "route": "/api/payments/intents/{order_id}", "status": 401, "duration_ms": 0.35}
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "a4c00f33-08d7-4186-9d91-9cadcce59d2a", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 12.53}
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "011a1b8a-85d5-46e6-a44e-3fff5d0786d3", "method": "GET", "route": "/api/payments/wallet", "status": 200, "duration_ms": 6.11}
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "c36451f5-9ccc-4ea0-b409-97c8786aa80d", "method": "POST", "route": "/_pact/state", "status": 200, "duration_ms": 16.17}
+[Notifications checks/contracts]   | {"service": "payments", "correlation_id": "181b67d3-d678-4b94-a3fe-0f49bf4bb21e", "method": "GET", "route": "/api/payments/transactions", "status": 200, "duration_ms": 4.29}
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | Verifying a pact between [1mHomeserviceWeb[0m and [1mPayments[0m
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   read own payment intent (0s loading, 64ms verification)
+[Notifications checks/contracts]   |      Given payable booking
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m200[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   settle own payment using an idempotency key (0s loading, 27ms verification)
+[Notifications checks/contracts]   |      Given payable booking
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m200[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   reject another customer reading payment (0s loading, 19ms verification)
+[Notifications checks/contracts]   |      Given payable booking
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m403[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   reject invalid payment credentials (0s loading, 14ms verification)
+[Notifications checks/contracts]   |      Given payable booking
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m401[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   read provider wallet with remote ledger (0s loading, 36ms verification)
+[Notifications checks/contracts]   |      Given settled completed booking
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m200[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   |   read customer payment transactions (0s loading, 45ms verification)
+[Notifications checks/contracts]   |      Given settled booking
+[Notifications checks/contracts]   |     returns a response which
+[Notifications checks/contracts]   |       has status code [1m200[0m ([32mOK[0m)
+[Notifications checks/contracts]   |       includes headers
+[Notifications checks/contracts]   |         "[1mContent-Type[0m" with value "[1mapplication/json[0m" ([32mOK[0m)
+[Notifications checks/contracts]   |       has a matching body ([32mOK[0m)
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | 
+[Notifications checks/contracts]   | PASS: real Payments FastAPI provider verified all six consumer interactions.
+[Notifications checks/contracts]   ✅  Success - Main Run Pact with the documented Compose command [16.669067417s]
+[Notifications checks/contracts] ⭐ Run Main Require generated contracts for both service boundaries
+[Notifications checks/contracts]   🐳  docker exec cmd=[bash -e /var/run/act/workflow/2] user= workdir=
+[Notifications checks/contracts]   ✅  Success - Main Require generated contracts for both service boundaries [174.91675ms]
+[Notifications checks/contracts] ⭐ Run Main Remove isolated contract containers
+[Notifications checks/contracts]   🐳  docker exec cmd=[bash -e /var/run/act/workflow/5] user= workdir=
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-payment-contract-db-1 Stopping 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-db-1 Stopping 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-db-1 Stopped 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-db-1 Removing 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-payment-contract-db-1 Stopped 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-payment-contract-db-1 Removing 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-contract-db-1 Removed 
+[Notifications checks/contracts]   |  Container homeservice-act-b8825e0-payment-contract-db-1 Removed 
+[Notifications checks/contracts]   |  Network homeservice-act-b8825e0_default Removing 
+[Notifications checks/contracts]   |  Network homeservice-act-b8825e0_default Removed 
+[Notifications checks/contracts]   ✅  Success - Main Remove isolated contract containers [1.30173725s]
+[Notifications checks/contracts] ⭐ Run Complete job
+[Notifications checks/contracts] Cleaning up container for job contracts
+[Notifications checks/contracts]   ✅  Success - Complete job
+[Notifications checks/contracts] 🏁  Job succeeded
