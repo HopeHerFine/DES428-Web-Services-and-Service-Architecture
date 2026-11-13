@@ -1,0 +1,10 @@
+ Container homeservice-rehearsal-b8825e0-notifications-worker-run-86b403f9a270 Creating 
+ Container homeservice-rehearsal-b8825e0-notifications-worker-run-86b403f9a270 Created 
+{"result": "PASS", "flow": "Keycloak code+PKCE -> nginx -> remote inbox -> mark read", "order_id": 8001, "notification_id": 1, "ownership_rejection": 403, "forged_token_rejection": 401}
+ Container homeservice-rehearsal-b8825e0-notifications-worker-run-c4af42230615 Creating 
+ Container homeservice-rehearsal-b8825e0-notifications-worker-run-c4af42230615 Created 
+{"probe": "refund-saga", "order_id": 8003, "step": "intent_ready"}
+{"probe": "refund-saga", "order_id": 8003, "step": "paid", "payment_status": "paid", "payment_replay_verified": true}
+{"probe": "refund-saga", "order_id": 8003, "step": "cancellation_requested"}
+{"probe": "refund-saga", "order_id": 8003, "step": "refunded", "result": "PASS", "payment_status": "refunded", "charges": 1, "refunds": 1, "refund_cents": 64200}
+{"result": "PASS", "probe": "payments-service", "flow": "Booking outbox -> RabbitMQ -> Payments PostgreSQL -> payment events -> Booking", "remote_wallet": true, "replay_safe": true, "ownership_rejection": 403, "forged_token_rejection": 401, "refund_projected": true}

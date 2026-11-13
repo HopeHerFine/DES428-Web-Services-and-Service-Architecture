@@ -1,0 +1,56 @@
+2026-11-13 16:33:33 +07
+ Image homeservice-rehearsal-b8825e0-security-probe Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 688B done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 470B done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 2.5s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 77B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 1.15kB done
+#5 DONE 0.0s
+
+#6 [1/6] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#6 resolve docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b 0.0s done
+#6 DONE 0.0s
+
+#7 [5/6] RUN useradd --create-home service && mkdir /bootstrap && chown service:service /bootstrap
+#7 CACHED
+
+#8 [2/6] WORKDIR /service
+#8 CACHED
+
+#9 [3/6] COPY requirements.txt .
+#9 CACHED
+
+#10 [4/6] RUN pip install --no-cache-dir -r requirements.txt
+#10 CACHED
+
+#11 [6/6] COPY --chown=service:service app ./app
+#11 CACHED
+
+#12 exporting to image
+#12 exporting layers done
+#12 exporting manifest sha256:163c1811a84ad838cddfc19dc87614911f5383673d28928f59db19b7cdf9536b done
+#12 exporting config sha256:a6a5e8542bd4ca1ff0d20a1dd38b55f79fc82118d00eb1b526252dd8e06a256b done
+#12 exporting attestation manifest sha256:262eeca6cb0f40c52565e1fbd9e9afff5ac716dfd33a3021dfb870ec7ab91c77 done
+#12 exporting manifest list sha256:307168230f25f7dd481867fa72d633ac2f12dae51b60fa0fab039b5a4d325405 done
+#12 naming to docker.io/library/homeservice-rehearsal-b8825e0-security-probe:latest done
+#12 unpacking to docker.io/library/homeservice-rehearsal-b8825e0-security-probe:latest done
+#12 DONE 0.1s
+
+#13 resolving provenance for metadata file
+#13 DONE 0.0s
+ Image homeservice-rehearsal-b8825e0-security-probe Built 
+ Container homeservice-rehearsal-b8825e0-security-probe-run-240a1a0917af Creating 
+ Container homeservice-rehearsal-b8825e0-security-probe-run-240a1a0917af Created 
+{"result": "PASS", "probe": "keycloak-gateway-security", "recorded_at": "2026-11-13T09:33:45.568128+00:00", "checks": [{"case": "missing_token", "expected": 401, "actual": 401, "correlation_id": "security-95ee96ed-e753-4e8d-823f-817a101d3e52"}, {"case": "forged_token", "expected": 401, "actual": 401, "correlation_id": "security-bf17d527-4795-4c4b-9cfd-09b261734261"}, {"case": "wrong_audience", "expected": 401, "actual": 401, "correlation_id": "security-b14f3574-d852-403d-9e02-40247927ac30"}, {"case": "valid_keycloak_token", "expected": 200, "actual": 200, "correlation_id": "security-8ff0054f-fa16-4f39-894d-210792d77e31"}, {"case": "cross_origin_write", "expected": 403, "actual": 403, "correlation_id": "security-c54f2f4a-7933-473e-912c-0eb213fc46cc"}, {"case": "expired_keycloak_token", "expected": 401, "actual": 401, "correlation_id": "security-589aecef-ccba-4574-9dd7-927765adf8ee"}], "temporary_clients_removed": true, "browser_pkce_preserved": true}

@@ -1,0 +1,70 @@
+2026-11-13 16:32:00 +07
+ Image homeservice-rehearsal-b8825e0-resilience-fixture Building 
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.26kB done
+#1 DONE 0.0s
+
+#2 [internal] load build definition from Dockerfile
+#2 transferring dockerfile: 470B 0.0s done
+#2 DONE 0.0s
+
+#3 [internal] load metadata for docker.io/library/python:3.12-slim
+#3 DONE 3.7s
+
+#4 [internal] load .dockerignore
+#4 transferring context: 77B done
+#4 DONE 0.0s
+
+#5 [internal] load build context
+#5 transferring context: 1.15kB done
+#5 DONE 0.0s
+
+#6 [1/6] FROM docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b
+#6 resolve docker.io/library/python:3.12-slim@sha256:5e2bdb1b0d542d5039cffb8181c65930093949194a65c365dfb1b0fe13a4fa5b 0.0s done
+#6 DONE 0.0s
+
+#7 [2/6] WORKDIR /service
+#7 CACHED
+
+#8 [3/6] COPY requirements.txt .
+#8 CACHED
+
+#9 [4/6] RUN pip install --no-cache-dir -r requirements.txt
+#9 CACHED
+
+#10 [5/6] RUN useradd --create-home service && mkdir /bootstrap && chown service:service /bootstrap
+#10 CACHED
+
+#11 [6/6] COPY --chown=service:service app ./app
+#11 CACHED
+
+#12 exporting to image
+#12 exporting layers done
+#12 exporting manifest sha256:0e6278ab538cab4075d4806a2c0aad1b40b4b0ddcfea947bf19469c0d03bb0f1 0.0s done
+#12 exporting config sha256:8bb8a01f2124f83a296749e9cf9e49219e74f845651b34e49d5467e89b7953d3
+#12 exporting config sha256:8bb8a01f2124f83a296749e9cf9e49219e74f845651b34e49d5467e89b7953d3 0.0s done
+#12 exporting attestation manifest sha256:ffaf751f13e5eb2b6ee35b9447cfae27d5faecee428b519d85330e77f2cc00c0 0.0s done
+#12 exporting manifest list sha256:5aa3a75af25325d56b07f183eb37f8b5141e8fa777073ab319cb3d7b4ed88554 0.0s done
+#12 naming to docker.io/library/homeservice-rehearsal-b8825e0-resilience-fixture:latest done
+#12 unpacking to docker.io/library/homeservice-rehearsal-b8825e0-resilience-fixture:latest done
+#12 DONE 0.1s
+
+#13 resolving provenance for metadata file
+#13 DONE 0.0s
+ Image homeservice-rehearsal-b8825e0-resilience-fixture Built 
+ Container homeservice-rehearsal-b8825e0-resilience-fixture-run-74dac79c8c41 Creating 
+ Container homeservice-rehearsal-b8825e0-resilience-fixture-run-74dac79c8c41 Created 
+ Container homeservice-rehearsal-b8825e0-resilience-fixture-run-c70072df68ff Creating 
+ Container homeservice-rehearsal-b8825e0-resilience-fixture-run-c70072df68ff Created 
+{"result": "READY", "synthetic_notifications": 5, "credentials_logged": false}
+ Image node:20-slim Pulling 
+ Image node:20-slim Pulled 
+ Container homeservice-rehearsal-b8825e0-resilience-probe-run-e31e81f0fcd3 Creating 
+ Container homeservice-rehearsal-b8825e0-resilience-probe-run-e31e81f0fcd3 Created 
+{"result":"PASS","cases":[{"case":"lost_reply","final_status":200,"attempts":2,"timeouts":1,"temporary_503s":0,"stable_result":true},{"case":"slow_calls","final_status":200,"attempts":2,"timeouts":1,"temporary_503s":0,"stable_result":true},{"case":"unavailable","final_status":200,"attempts":3,"timeouts":0,"temporary_503s":2,"stable_result":true},{"case":"concurrent","requests":8,"stable_result":true,"key_conflict_rejection":409}]}
+ Container homeservice-rehearsal-b8825e0-resilience-fixture-run-d5cb6256bf0b Creating 
+ Container homeservice-rehearsal-b8825e0-resilience-fixture-run-d5cb6256bf0b Created 
+{"result": "PASS", "probe": "notifications-resilience", "http": [{"case": "lost_reply", "final_status": 200, "attempts": 2, "timeouts": 1, "temporary_503s": 0, "stable_result": true}, {"case": "slow_calls", "final_status": 200, "attempts": 2, "timeouts": 1, "temporary_503s": 0, "stable_result": true}, {"case": "unavailable", "final_status": 200, "attempts": 3, "timeouts": 0, "temporary_503s": 2, "stable_result": true}, {"case": "concurrent", "requests": 8, "stable_result": true, "key_conflict_rejection": 409}], "postgresql": [{"case": "lost_reply", "write_receipts": 1, "read_at_recorded": true}, {"case": "slow_calls", "write_receipts": 1, "read_at_recorded": true}, {"case": "unavailable", "write_receipts": 1, "read_at_recorded": true}, {"case": "concurrent", "write_receipts": 1, "read_at_recorded": true}], "concurrency_requests": 8}
+ Container homeservice-rehearsal-b8825e0-resilience-fixture-run-caf3e380eca6 Creating 
+ Container homeservice-rehearsal-b8825e0-resilience-fixture-run-caf3e380eca6 Created 
+Synthetic resilience rows and temporary credentials removed
