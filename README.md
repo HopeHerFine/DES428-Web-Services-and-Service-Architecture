@@ -68,13 +68,9 @@ maximum sampled containers **1.13 GiB** under a **7.76 GiB** Engine budget.
 See [offline/RAM procedure and evidence](docs/offline-memory.md) and
 [the brief checklist](docs/progress-checklist.md) for exact scope and remaining work.
 
-The second service and Saga are outside this Notifications increment.
+The integrated demo includes both Notifications and Payments services. Beat 1 exercises the booking payment and refund flow. Beat 4 generates separate traces for Monolith to Notifications and Monolith to Payments.
 
-Development of the second service has started as an opt-in
-[Payments & Wallet pilot](services/payments/README.md). The default stack remains
-the verified Notifications increment. Use a fresh isolated project for the pilot;
-legacy payment-history migration and the complete Saga are still pending.
-
+See services/payments/README.md for the Payments service and its migration procedures.
 The instructions below describe the inherited monolith. Use `compose.legacy.yml`
 explicitly when running that separate baseline; its port 3000 conflicts with Grafana.
 Keep the team repository private and never commit local secrets or database files.
