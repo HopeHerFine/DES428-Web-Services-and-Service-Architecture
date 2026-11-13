@@ -98,7 +98,7 @@ jobs:
         if: failure()
         run: docker compose -f compose.contracts.yml logs --no-color --tail 100
       - uses: actions/upload-artifact@v7.0.2
-        if: always()
+        if: ${{ always() && !env.ACT }}
         with:
           name: homeservice-pacts
           path: runtime/contracts/pacts/*.json
